@@ -65,7 +65,7 @@ def build_html(data):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hawaii Airfare vs Oil Price Tracker</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{background:#0f0f1a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,monospace;padding:20px}}
@@ -102,6 +102,12 @@ tr:hover td{{background:#1a1a2e}}
 .dim{{color:#666}}
 .info-box{{background:#0f0f1a;border-radius:6px;padding:12px 16px;margin:8px 0;font-size:.85em;color:#aaa;border-left:3px solid #00d4ff}}
 #updated{{color:#666;font-size:.75em}}
+.heatmap{{overflow-x:auto}}
+.heatmap table{{min-width:700px}}
+.heatmap th{{position:sticky;top:0;background:#1a1a2e;white-space:nowrap;font-size:.78em}}
+.heatmap td{{text-align:center;font-weight:600;font-size:.82em;white-space:nowrap;min-width:70px}}
+.heatmap td.no-data{{color:#444;font-weight:400}}
+.heatmap tr td:first-child{{text-align:left;color:#ccc;font-weight:400}}
 </style>
 </head>
 <body>
@@ -148,6 +154,28 @@ function cheapest(flights) {{
     if (!m[k] || f.price < m[k].price) m[k] = f;
   }});
   return Object.values(m);
+}}
+
+// Color-code price cells: green (cheap) → yellow → red (expensive)
+function priceColor(price, allPrices) {{
+  if (!allPrices.length) return '#888';
+  const sorted = [...allPrices].sort((a,b)=>a-b);
+  const rank = sorted.indexOf(price);
+  const pct = sorted.length > 1 ? rank / (sorted.length - 1) : 0;
+  // green #4cff8e → yellow #ffd93d → red #ff6b6b
+  if (pct <= 0.5) {{
+    const t = pct * 2;
+    const r = Math.round(76 + t * (255 - 76));
+    const g = Math.round(255 + t * (217 - 255));
+    const b = Math.round(142 + t * (61 - 142));
+    return 'rgb('+r+','+g+','+b+')';
+  }} else {{
+    const t = (pct - 0.5) * 2;
+    const r = Math.round(255 + t * (255 - 255));
+    const g = Math.round(217 + t * (107 - 217));
+    const b = Math.round(61 + t * (107 - 61));
+    return 'rgb('+r+','+g+','+b+')';
+  }}
 }}
 
 // ---- build controls ----
@@ -294,7 +322,7 @@ function renderTab1() {{
   const filtered = DATA.flights.filter(f =>
     f.target_date === target && corrs.includes(f.corridor));
 
-  // Cheapest per corridor per date
+  // Cheapest per corridor per observation date
   const byCorridor = {{}};
   filtered.forEach(f => {{
     if (!byCorridor[f.corridor]) byCorridor[f.corridor] = {{}};
@@ -302,59 +330,30 @@ function renderTab1() {{
       byCorridor[f.corridor][f.observed_date] = f.price;
   }});
   const dates = unique(filtered.map(f=>f.observed_date));
-  const useBar = dates.length < 3;
   const corrKeys = Object.keys(byCorridor).sort();
+  const allPrices = [];
+  corrKeys.forEach(c => dates.forEach(d => {{
+    if (byCorridor[c][d] != null) allPrices.push(byCorridor[c][d]);
+  }}));
 
-  pane.innerHTML = '<div class="chart-box"><canvas id="c1"></canvas></div>';
-  clearChart('c1');
-
-  if (useBar) {{
-    charts['c1'] = new Chart(document.getElementById('c1'), {{
-      type:'bar',
-      data:{{
-        labels: corrKeys,
-        datasets: dates.map((d,i) => ({{
-          label: d,
-          data: corrKeys.map(c => byCorridor[c][d] ?? null),
-          backgroundColor: COLORS[i % COLORS.length] + '99',
-          borderColor: COLORS[i % COLORS.length],
-          borderWidth: 1
-        }}))
-      }},
-      options:{{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{{legend:{{labels:{{color:'#ccc'}}}},
-                  title:{{display:true,text:'Cheapest fare for '+target,color:'#ccc'}}}},
-        scales:{{
-          x:{{ticks:{{color:'#888'}},grid:{{color:'#1a1a2e'}}}},
-          y:{{title:{{display:true,text:'Price ($)',color:'#ccc'}},
-              ticks:{{color:'#ccc'}},grid:{{color:'#1a1a2e'}}}}
-        }}
+  let html = '<div class="heatmap"><table><thead><tr><th>Corridor</th>';
+  dates.forEach(d => {{ html += '<th>'+d+'</th>'; }});
+  html += '</tr></thead><tbody>';
+  corrKeys.forEach(c => {{
+    html += '<tr><td>'+c+'</td>';
+    dates.forEach(d => {{
+      const p = byCorridor[c]?.[d];
+      if (p != null) {{
+        html += '<td style="color:'+priceColor(p, allPrices)+'">$'+p.toFixed(0)+'</td>';
+      }} else {{
+        html += '<td class="no-data">&mdash;</td>';
       }}
     }});
-  }} else {{
-    charts['c1'] = new Chart(document.getElementById('c1'), {{
-      type:'line',
-      data:{{
-        labels: dates,
-        datasets: corrKeys.map((c,i) => ({{
-          label:c,
-          data: dates.map(d => byCorridor[c][d] ?? null),
-          borderColor: COLORS[i%COLORS.length],
-          tension:.3,pointRadius:2,spanGaps:true
-        }}))
-      }},
-      options:{{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{{legend:{{labels:{{color:'#ccc'}}}}}},
-        scales:{{
-          x:{{ticks:{{color:'#888',maxTicksLimit:15}},grid:{{color:'#1a1a2e'}}}},
-          y:{{title:{{display:true,text:'Cheapest Fare ($)',color:'#ccc'}},
-              ticks:{{color:'#ccc'}},grid:{{color:'#1a1a2e'}}}}
-        }}
-      }}
-    }});
-  }}
+    html += '</tr>';
+  }});
+  html += '</tbody></table></div>';
+  html += '<p class="dim" style="margin-top:8px">Cheapest fare per corridor for target date '+target+' &middot; '+dates.length+' observation day(s)</p>';
+  pane.innerHTML = html;
 }}
 
 // ======== TAB 2: Booking Snapshot ========
@@ -368,41 +367,38 @@ function renderTab2() {{
   const targets = targetDates();
 
   // Cheapest per corridor per target
-  const byCorridor = {{}};
+  const grid = {{}};  // grid[target][corridor] = price
   todayFlights.forEach(f => {{
-    if (!byCorridor[f.corridor]) byCorridor[f.corridor] = {{}};
-    if (!byCorridor[f.corridor][f.target_date] || f.price < byCorridor[f.corridor][f.target_date])
-      byCorridor[f.corridor][f.target_date] = f.price;
+    if (!grid[f.target_date]) grid[f.target_date] = {{}};
+    if (!grid[f.target_date][f.corridor] || f.price < grid[f.target_date][f.corridor])
+      grid[f.target_date][f.corridor] = f.price;
   }});
-  const corrKeys = Object.keys(byCorridor).sort();
+  const corrKeys = [...corrs].sort();
 
-  pane.innerHTML = '<div class="chart-box" style="height:500px"><canvas id="c2"></canvas></div>';
-  clearChart('c2');
-  charts['c2'] = new Chart(document.getElementById('c2'), {{
-    type:'bar',
-    data:{{
-      labels: targets,
-      datasets: corrKeys.map((c,i) => ({{
-        label: c,
-        data: targets.map(t => byCorridor[c]?.[t] ?? null),
-        backgroundColor: COLORS[i%COLORS.length] + '99',
-        borderColor: COLORS[i%COLORS.length],
-        borderWidth: 1
-      }}))
-    }},
-    options:{{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{{
-        legend:{{labels:{{color:'#ccc'}}}},
-        title:{{display:true,text:'Forward Booking Snapshot ('+latest+')',color:'#ccc'}}
-      }},
-      scales:{{
-        x:{{ticks:{{color:'#888'}},grid:{{color:'#1a1a2e'}}}},
-        y:{{title:{{display:true,text:'Price ($)',color:'#ccc'}},
-            ticks:{{color:'#ccc'}},grid:{{color:'#1a1a2e'}}}}
+  // Collect all prices for color scale
+  const allPrices = [];
+  targets.forEach(t => corrKeys.forEach(c => {{
+    if (grid[t]?.[c] != null) allPrices.push(grid[t][c]);
+  }}));
+
+  let html = '<div class="heatmap"><table><thead><tr><th>Target Date</th>';
+  corrKeys.forEach(c => {{ html += '<th>'+c+'</th>'; }});
+  html += '</tr></thead><tbody>';
+  targets.forEach(t => {{
+    html += '<tr><td>'+t+'</td>';
+    corrKeys.forEach(c => {{
+      const p = grid[t]?.[c];
+      if (p != null) {{
+        html += '<td style="color:'+priceColor(p, allPrices)+'">$'+p.toFixed(0)+'</td>';
+      }} else {{
+        html += '<td class="no-data">&mdash;</td>';
       }}
-    }}
+    }});
+    html += '</tr>';
   }});
+  html += '</tbody></table></div>';
+  html += '<p class="dim" style="margin-top:8px">Forward Booking Snapshot &middot; Cheapest fare per corridor &middot; observed '+latest+'</p>';
+  pane.innerHTML = html;
 }}
 
 // ======== TAB 3: Airline Breakdown ========
