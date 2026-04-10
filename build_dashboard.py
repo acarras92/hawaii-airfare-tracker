@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Build the dashboard HTML and copy latest.json into docs/ for GitHub Pages.
-Run after collect_data.py.
+Build the dashboard: regenerate latest.json from DB, embed data into
+docs/index.html so it works on GitHub Pages AND when opened locally.
 """
 
 import json
@@ -13,11 +13,13 @@ ROOT = Path(__file__).parent
 DB_PATH = ROOT / "data" / "prices.db"
 JSON_SRC = ROOT / "data" / "latest.json"
 JSON_DST = ROOT / "docs" / "latest.json"
-HTML_PATH = ROOT / "docs" / "index.html"
+HTML_TEMPLATE = ROOT / "docs" / "index.html"
+
+EMBED_MARKER = "// __DATA_EMBED__"
 
 
 def regenerate_json(conn):
-    """Regenerate latest.json from database (in case it's stale)."""
+    """Regenerate latest.json from database."""
     flights = conn.execute(
         """SELECT observed_date, corridor, target_date, airline, price, is_nonstop, duration_mins
            FROM flight_observations ORDER BY observed_date, corridor, target_date, price"""
@@ -47,10 +49,44 @@ def regenerate_json(conn):
     return output
 
 
+def embed_data_in_html(data):
+    """Inject DATA_EMBED into the HTML so it works without fetch()."""
+    html = HTML_TEMPLATE.read_text(encoding="utf-8")
+
+    # Remove any previous embed
+    lines = html.split("\n")
+    cleaned = []
+    skip = False
+    for line in lines:
+        if EMBED_MARKER + "_START" in line:
+            skip = True
+            continue
+        if EMBED_MARKER + "_END" in line:
+            skip = False
+            continue
+        if not skip:
+            cleaned.append(line)
+    html = "\n".join(cleaned)
+
+    # Build the embed script
+    data_json = json.dumps(data, separators=(",", ":"))
+    embed_script = (
+        f"{EMBED_MARKER}_START\n"
+        f"<script>const DATA_EMBED={data_json};</script>\n"
+        f"{EMBED_MARKER}_END"
+    )
+
+    # Insert just before the main <script> tag
+    html = html.replace("<script>\nlet DATA", f"{embed_script}\n<script>\nlet DATA")
+
+    HTML_TEMPLATE.write_text(html, encoding="utf-8")
+
+
 def main():
     docs = ROOT / "docs"
     docs.mkdir(parents=True, exist_ok=True)
 
+    data = None
     if DB_PATH.exists():
         conn = sqlite3.connect(DB_PATH)
         data = regenerate_json(conn)
@@ -58,20 +94,23 @@ def main():
         n_flights = len(data["flights"])
         n_oil = len(data["oil_prices"])
         print(f"Regenerated latest.json: {n_flights} flights, {n_oil} oil records")
+    elif JSON_SRC.exists():
+        data = json.loads(JSON_SRC.read_text())
+        print("Using existing latest.json")
     else:
-        print("No database found, using existing latest.json if available")
+        data = {"last_updated": None, "flights": [], "oil_prices": []}
+        print("No data found, using empty dataset")
 
-    # Copy latest.json into docs/ for GitHub Pages
-    if JSON_SRC.exists():
-        shutil.copy2(JSON_SRC, JSON_DST)
-        print(f"Copied latest.json to {JSON_DST}")
-    else:
-        # Create empty data file so the dashboard doesn't error
-        with open(JSON_DST, "w") as f:
-            json.dump({"last_updated": None, "flights": [], "oil_prices": []}, f)
-        print("Created empty latest.json placeholder")
+    # Copy latest.json into docs/ (for fetch fallback)
+    JSON_SRC.parent.mkdir(parents=True, exist_ok=True)
+    with open(JSON_SRC, "w") as f:
+        json.dump(data, f, indent=2)
+    shutil.copy2(JSON_SRC, JSON_DST)
 
-    print(f"Dashboard ready at {HTML_PATH}")
+    # Embed data directly into HTML
+    embed_data_in_html(data)
+    print(f"Embedded {len(data['flights'])} flights into {HTML_TEMPLATE}")
+    print(f"Dashboard ready at {HTML_TEMPLATE}")
 
 
 if __name__ == "__main__":
