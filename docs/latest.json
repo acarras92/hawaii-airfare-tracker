@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-10T14:11:14.078087+00:00",
+  "last_updated": "2026-04-10T15:25:25.579695+00:00",
   "flights": [
     {
       "observed_date": "2026-04-10",
@@ -54,6 +54,33 @@
       "price": 562.0,
       "is_nonstop": 1,
       "duration_mins": 654
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 381.0,
+      "is_nonstop": 0,
+      "duration_mins": 737
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 403.0,
+      "is_nonstop": 0,
+      "duration_mins": 781
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 451.0,
+      "is_nonstop": 0,
+      "duration_mins": 709
     },
     {
       "observed_date": "2026-04-10",
@@ -138,6 +165,60 @@
     },
     {
       "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Delta Air Lines",
+      "price": 651.0,
+      "is_nonstop": 0,
+      "duration_mins": 784
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 689.0,
+      "is_nonstop": 0,
+      "duration_mins": 810
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Delta Air Lines",
+      "price": 691.0,
+      "is_nonstop": 0,
+      "duration_mins": 782
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 411.0,
+      "is_nonstop": 0,
+      "duration_mins": 734
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 497.0,
+      "is_nonstop": 0,
+      "duration_mins": 730
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "JFK-HNL",
+      "target_date": "2027-01-15",
+      "airline": "American Airlines",
+      "price": 517.0,
+      "is_nonstop": 0,
+      "duration_mins": 739
+    },
+    {
+      "observed_date": "2026-04-10",
       "corridor": "LAX-HNL",
       "target_date": "2026-06-15",
       "airline": "American Airlines",
@@ -189,6 +270,33 @@
       "price": 273.0,
       "is_nonstop": 1,
       "duration_mins": 350
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Southwest Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 340
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 347
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 232.0,
+      "is_nonstop": 1,
+      "duration_mins": 358
     },
     {
       "observed_date": "2026-04-10",
@@ -273,6 +381,60 @@
     },
     {
       "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 409.0,
+      "is_nonstop": 1,
+      "duration_mins": 360
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 449.0,
+      "is_nonstop": 1,
+      "duration_mins": 349
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 449.0,
+      "is_nonstop": 1,
+      "duration_mins": 348
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 273.0,
+      "is_nonstop": 1,
+      "duration_mins": 365
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "American Airlines",
+      "price": 273.0,
+      "is_nonstop": 1,
+      "duration_mins": 370
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 273.0,
+      "is_nonstop": 1,
+      "duration_mins": 379
+    },
+    {
+      "observed_date": "2026-04-10",
       "corridor": "LAX-OGG",
       "target_date": "2026-06-15",
       "airline": "United Airlines",
@@ -324,6 +486,33 @@
       "price": 255.0,
       "is_nonstop": 0,
       "duration_mins": 387
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-07-15",
+      "airline": "Delta Air Lines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 339
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-07-15",
+      "airline": "United Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 343
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-07-15",
+      "airline": "American Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 339
     },
     {
       "observed_date": "2026-04-10",
@@ -408,6 +597,60 @@
     },
     {
       "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 479.0,
+      "is_nonstop": 0,
+      "duration_mins": 400
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Delta Air Lines",
+      "price": 482.0,
+      "is_nonstop": 1,
+      "duration_mins": 343
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 578.0,
+      "is_nonstop": 0,
+      "duration_mins": 440
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Delta Air Lines",
+      "price": 250.0,
+      "is_nonstop": 1,
+      "duration_mins": 343
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 250.0,
+      "is_nonstop": 1,
+      "duration_mins": 340
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "LAX-OGG",
+      "target_date": "2027-01-15",
+      "airline": "American Airlines",
+      "price": 250.0,
+      "is_nonstop": 1,
+      "duration_mins": 354
+    },
+    {
+      "observed_date": "2026-04-10",
       "corridor": "SEA-HNL",
       "target_date": "2026-06-15",
       "airline": "Southwest Airlines",
@@ -459,6 +702,33 @@
       "price": 342.0,
       "is_nonstop": 0,
       "duration_mins": 455
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-07-15",
+      "airline": "United Airlines",
+      "price": 280.0,
+      "is_nonstop": 0,
+      "duration_mins": 477
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Southwest Airlines",
+      "price": 299.0,
+      "is_nonstop": 0,
+      "duration_mins": 595
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 315.0,
+      "is_nonstop": 0,
+      "duration_mins": 461
     },
     {
       "observed_date": "2026-04-10",
@@ -543,6 +813,60 @@
     },
     {
       "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-12-20",
+      "airline": "United Airlines",
+      "price": 519.0,
+      "is_nonstop": 0,
+      "duration_mins": 527
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 536.0,
+      "is_nonstop": 0,
+      "duration_mins": 529
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 610.0,
+      "is_nonstop": 0,
+      "duration_mins": 532
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 388.0,
+      "is_nonstop": 0,
+      "duration_mins": 481
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 396.0,
+      "is_nonstop": 0,
+      "duration_mins": 530
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SEA-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Delta Air Lines",
+      "price": 400.0,
+      "is_nonstop": 1,
+      "duration_mins": 386
+    },
+    {
+      "observed_date": "2026-04-10",
       "corridor": "SFO-HNL",
       "target_date": "2026-06-15",
       "airline": "United Airlines",
@@ -594,6 +918,33 @@
       "price": 273.0,
       "is_nonstop": 1,
       "duration_mins": 323
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 492
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 224.0,
+      "is_nonstop": 1,
+      "duration_mins": 340
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 224.0,
+      "is_nonstop": 1,
+      "duration_mins": 329
     },
     {
       "observed_date": "2026-04-10",
@@ -678,6 +1029,60 @@
     },
     {
       "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 473.0,
+      "is_nonstop": 0,
+      "duration_mins": 453
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 484.0,
+      "is_nonstop": 0,
+      "duration_mins": 454
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-12-20",
+      "airline": "United Airlines",
+      "price": 612.0,
+      "is_nonstop": 0,
+      "duration_mins": 549
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 273.0,
+      "is_nonstop": 1,
+      "duration_mins": 348
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 282.0,
+      "is_nonstop": 0,
+      "duration_mins": 483
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 282.0,
+      "is_nonstop": 0,
+      "duration_mins": 464
+    },
+    {
+      "observed_date": "2026-04-10",
       "corridor": "SFO-OGG",
       "target_date": "2026-06-15",
       "airline": "United Airlines",
@@ -729,6 +1134,33 @@
       "price": 273.0,
       "is_nonstop": 1,
       "duration_mins": 331
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 200.0,
+      "is_nonstop": 1,
+      "duration_mins": 324
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-07-15",
+      "airline": "Delta Air Lines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 425
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-07-15",
+      "airline": "Alaska Airlines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 498
     },
     {
       "observed_date": "2026-04-10",
@@ -810,6 +1242,60 @@
       "price": 252.0,
       "is_nonstop": 0,
       "duration_mins": 476
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 616.0,
+      "is_nonstop": 0,
+      "duration_mins": 476
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 670.0,
+      "is_nonstop": 0,
+      "duration_mins": 445
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 744.0,
+      "is_nonstop": 0,
+      "duration_mins": 432
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 282.0,
+      "is_nonstop": 0,
+      "duration_mins": 432
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 282.0,
+      "is_nonstop": 0,
+      "duration_mins": 504
+    },
+    {
+      "observed_date": "2026-04-10",
+      "corridor": "SFO-OGG",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 316.0,
+      "is_nonstop": 1,
+      "duration_mins": 345
     }
   ],
   "oil_prices": [
