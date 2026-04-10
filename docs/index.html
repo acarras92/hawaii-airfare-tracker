@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hawaii Airfare vs Oil Price Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+    padding: 20px;
+  }
+  h1 { color: #00d4ff; font-size: 1.6em; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 0.85em; margin-bottom: 16px; }
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    padding: 12px 16px; background: #1a1a2e; border-radius: 8px; margin-bottom: 16px;
+  }
+  .controls label { color: #aaa; font-size: 0.8em; }
+  .controls select, .controls input {
+    background: #252540; color: #e0e0e0; border: 1px solid #333;
+    padding: 4px 8px; border-radius: 4px; font-size: 0.85em;
+  }
+  .corridor-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+  .corridor-checks label {
+    display: flex; align-items: center; gap: 4px;
+    background: #252540; padding: 2px 8px; border-radius: 4px; cursor: pointer;
+  }
+  .tabs {
+    display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid #252540;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 8px 20px; cursor: pointer; border: none; background: #1a1a2e;
+    color: #888; font-size: 0.85em; border-radius: 6px 6px 0 0; transition: 0.2s;
+  }
+  .tab.active { background: #252540; color: #00d4ff; }
+  .tab:hover { color: #00d4ff; }
+  .tab-content { display: none; background: #252540; padding: 20px; border-radius: 0 0 8px 8px; }
+  .tab-content.active { display: block; }
+  .chart-wrap { position: relative; height: 400px; margin: 8px 0; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 12px;
+    font-size: 0.8em; font-weight: 600; margin: 8px 0;
+  }
+  .badge.positive { background: #1a3a2a; color: #4cff8e; }
+  .badge.negative { background: #3a1a1a; color: #ff6b6b; }
+  .badge.neutral { background: #2a2a3a; color: #aaa; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 0.85em; margin-top: 8px;
+  }
+  th {
+    text-align: left; padding: 8px 12px; border-bottom: 2px solid #333;
+    color: #00d4ff; cursor: pointer; user-select: none;
+  }
+  th:hover { color: #fff; }
+  td { padding: 6px 12px; border-bottom: 1px solid #1a1a2e; }
+  tr:hover td { background: #1a1a2e; }
+  .price-up { color: #ff6b6b; }
+  .price-down { color: #4cff8e; }
+  .price-flat { color: #888; }
+  .nonstop-yes { color: #4cff8e; }
+  .nonstop-no { color: #888; }
+  .toggle-group { display: flex; gap: 0; }
+  .toggle-btn {
+    padding: 4px 12px; border: 1px solid #333; background: #1a1a2e;
+    color: #888; cursor: pointer; font-size: 0.8em;
+  }
+  .toggle-btn:first-child { border-radius: 4px 0 0 4px; }
+  .toggle-btn:last-child { border-radius: 0 4px 4px 0; }
+  .toggle-btn.active { background: #00d4ff; color: #0f0f1a; border-color: #00d4ff; }
+  #lastUpdated { color: #666; font-size: 0.75em; }
+
+  /* Tab 5: Analysis & Insights */
+  .insights-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  @media (max-width: 900px) { .insights-grid { grid-template-columns: 1fr; } }
+  .insight-panel {
+    background: #1a1a2e; border-radius: 8px; padding: 16px;
+    border: 1px solid #252540;
+  }
+  .insight-panel h3 {
+    color: #00d4ff; font-size: 0.95em; margin-bottom: 10px;
+    border-bottom: 1px solid #333; padding-bottom: 6px;
+  }
+  .insight-panel.full-width { grid-column: 1 / -1; }
+  .corr-table { width: 100%; font-size: 0.82em; }
+  .corr-table th { padding: 6px 8px; font-size: 0.85em; }
+  .corr-table td { padding: 5px 8px; text-align: center; }
+  .corr-table td:first-child { text-align: left; font-weight: 600; }
+  .corr-strong { color: #4cff8e; }
+  .corr-moderate { color: #ffd93d; }
+  .corr-weak { color: #888; }
+  .takeaway-list {
+    list-style: none; padding: 0;
+  }
+  .takeaway-list li {
+    padding: 8px 0; border-bottom: 1px solid #252540;
+    font-size: 0.85em; line-height: 1.5;
+  }
+  .takeaway-list li:last-child { border-bottom: none; }
+  .takeaway-label {
+    display: inline-block; font-size: 0.75em; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px; margin-right: 6px;
+  }
+  .label-signal { background: #3a1a1a; color: #ff6b6b; }
+  .label-trend { background: #1a2a3a; color: #00d4ff; }
+  .label-value { background: #1a3a2a; color: #4cff8e; }
+  .label-vol { background: #2a2a1a; color: #ffd93d; }
+  .summary-text {
+    font-size: 0.85em; color: #bbb; line-height: 1.6;
+    margin-top: 8px; padding: 10px; background: #0f0f1a; border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Hawaii Airfare vs. Oil Price Tracker</h1>
+<p class="subtitle">Daily tracking of airfares into Hawaii correlated with WTI crude oil prices</p>
+
+<div class="controls">
+  <div>
+    <label>Target Date</label><br>
+    <select id="targetDateSelect"></select>
+  </div>
+  <div>
+    <label>Corridors</label><br>
+    <div class="corridor-checks" id="corridorChecks"></div>
+  </div>
+  <div>
+    <label>Observation Range</label><br>
+    <input type="date" id="rangeStart"> &ndash; <input type="date" id="rangeEnd">
+  </div>
+  <div id="lastUpdated"></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="tab1">Oil vs Airfare</button>
+  <button class="tab" data-tab="tab2">By Corridor</button>
+  <button class="tab" data-tab="tab3">Booking Snapshot</button>
+  <button class="tab" data-tab="tab4">Airline Breakdown</button>
+  <button class="tab" data-tab="tab5">Analysis &amp; Insights</button>
+</div>
+
+<div class="tab-content active" id="tab1">
+  <div id="corrBadge"></div>
+  <div class="chart-wrap"><canvas id="chart1"></canvas></div>
+</div>
+
+<div class="tab-content" id="tab2">
+  <div class="toggle-group" id="nonstopToggle">
+    <button class="toggle-btn active" data-val="all">All Fares</button>
+    <button class="toggle-btn" data-val="nonstop">Nonstop Only</button>
+  </div>
+  <div class="chart-wrap"><canvas id="chart2"></canvas></div>
+</div>
+
+<div class="tab-content" id="tab3">
+  <div class="chart-wrap" style="height:500px"><canvas id="chart3"></canvas></div>
+</div>
+
+<div class="tab-content" id="tab4">
+  <table id="airlineTable">
+    <thead>
+      <tr>
+        <th data-col="corridor">Corridor</th>
+        <th data-col="target_date">Target Date</th>
+        <th data-col="airline">Airline</th>
+        <th data-col="price">Price</th>
+        <th data-col="is_nonstop">Nonstop</th>
+        <th data-col="change">vs 7 Days Ago</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="tab-content" id="tab5">
+  <div class="insights-grid">
+    <div class="insight-panel">
+      <h3>Oil-Airfare Correlation by Corridor</h3>
+      <table class="corr-table" id="corrTable">
+        <thead>
+          <tr><th>Corridor</th><th>r (same day)</th><th>r (7-day lag)</th><th>r (14-day lag)</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="summary-text" id="corrSummary"></div>
+    </div>
+    <div class="insight-panel">
+      <h3>Key Takeaways</h3>
+      <ul class="takeaway-list" id="takeawayList"></ul>
+    </div>
+    <div class="insight-panel full-width">
+      <h3>Price Momentum (7-Day Rolling Avg, Normalized 0-100)</h3>
+      <div class="chart-wrap"><canvas id="chart5"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let DATA = { flights: [], oil_prices: [], last_updated: null };
+let chart1, chart2, chart3, chart5;
+const COLORS = ['#00d4ff','#ff6b6b','#4cff8e','#ffd93d','#c084fc','#f97316','#22d3ee','#e879f9'];
+
+// --- Data loading ---
+async function loadData() {
+  try {
+    const resp = await fetch('latest.json');
+    DATA = await resp.json();
+  } catch (e) {
+    console.error('Failed to load data:', e);
+    DATA = { flights: [], oil_prices: [], last_updated: null };
+  }
+  initControls();
+  renderAll();
+}
+
+// --- Controls ---
+function getTargetDates() {
+  return [...new Set(DATA.flights.map(f => f.target_date))].sort();
+}
+function getCorridors() {
+  return [...new Set(DATA.flights.map(f => f.corridor))].sort();
+}
+function getObsDates() {
+  return [...new Set(DATA.flights.map(f => f.observed_date))].sort();
+}
+
+function initControls() {
+  const sel = document.getElementById('targetDateSelect');
+  sel.innerHTML = '';
+  getTargetDates().forEach(d => {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d; sel.appendChild(o);
+  });
+  sel.addEventListener('change', renderAll);
+
+  const checks = document.getElementById('corridorChecks');
+  checks.innerHTML = '';
+  getCorridors().forEach(c => {
+    const lbl = document.createElement('label');
+    lbl.innerHTML = `<input type="checkbox" value="${c}" checked> ${c}`;
+    lbl.querySelector('input').addEventListener('change', renderAll);
+    checks.appendChild(lbl);
+  });
+
+  const dates = getObsDates();
+  if (dates.length) {
+    document.getElementById('rangeStart').value = dates[0];
+    document.getElementById('rangeEnd').value = dates[dates.length - 1];
+  }
+  document.getElementById('rangeStart').addEventListener('change', renderAll);
+  document.getElementById('rangeEnd').addEventListener('change', renderAll);
+
+  if (DATA.last_updated) {
+    document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date(DATA.last_updated).toLocaleString();
+  }
+}
+
+function selectedTarget() { return document.getElementById('targetDateSelect').value; }
+function selectedCorridors() {
+  return [...document.querySelectorAll('#corridorChecks input:checked')].map(i => i.value);
+}
+function dateRange() {
+  return [document.getElementById('rangeStart').value, document.getElementById('rangeEnd').value];
+}
+
+// --- Tabs ---
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+    renderAll();
+  });
+});
+
+document.querySelectorAll('#nonstopToggle .toggle-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#nonstopToggle .toggle-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    renderTab2();
+  });
+});
+
+// --- Helpers ---
+function pearson(xs, ys) {
+  const n = xs.length;
+  if (n < 3) return null;
+  const mx = xs.reduce((a,b) => a+b, 0) / n;
+  const my = ys.reduce((a,b) => a+b, 0) / n;
+  let num = 0, dx = 0, dy = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - mx) * (ys[i] - my);
+    dx += (xs[i] - mx) ** 2;
+    dy += (ys[i] - my) ** 2;
+  }
+  dx = Math.sqrt(dx); dy = Math.sqrt(dy);
+  if (dx === 0 || dy === 0) return null;
+  return num / (dx * dy);
+}
+
+function rollingAvg(arr, window) {
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    const start = Math.max(0, i - window + 1);
+    const slice = arr.slice(start, i + 1).filter(v => v != null);
+    result.push(slice.length > 0 ? slice.reduce((a,b) => a+b, 0) / slice.length : null);
+  }
+  return result;
+}
+
+function normalize0100(arr) {
+  const vals = arr.filter(v => v != null);
+  if (vals.length === 0) return arr.map(() => null);
+  const min = Math.min(...vals), max = Math.max(...vals);
+  if (max === min) return arr.map(v => v != null ? 50 : null);
+  return arr.map(v => v != null ? ((v - min) / (max - min)) * 100 : null);
+}
+
+function getCheapestByCorridorDate(flights) {
+  const map = {};
+  flights.forEach(f => {
+    const key = `${f.corridor}|${f.observed_date}`;
+    if (!map[key] || f.price < map[key].price) map[key] = f;
+  });
+  return Object.values(map);
+}
+
+function getCorridorTimeseries(corridor, obsDates) {
+  const byDate = {};
+  DATA.flights.filter(f => f.corridor === corridor).forEach(f => {
+    if (!byDate[f.observed_date] || f.price < byDate[f.observed_date])
+      byDate[f.observed_date] = f.price;
+  });
+  return obsDates.map(d => byDate[d] ?? null);
+}
+
+// --- Rendering ---
+function renderAll() {
+  renderTab1();
+  renderTab2();
+  renderTab3();
+  renderTab4();
+  renderTab5();
+}
+
+function renderTab1() {
+  const target = selectedTarget();
+  const corridors = selectedCorridors();
+  const [start, end] = dateRange();
+
+  const filtered = DATA.flights.filter(f =>
+    f.target_date === target &&
+    corridors.includes(f.corridor) &&
+    f.observed_date >= start && f.observed_date <= end
+  );
+
+  const fareByDate = {};
+  filtered.forEach(f => {
+    if (!fareByDate[f.observed_date] || f.price < fareByDate[f.observed_date])
+      fareByDate[f.observed_date] = f.price;
+  });
+
+  const oilByDate = {};
+  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+
+  const allDates = [...new Set([...Object.keys(fareByDate), ...Object.keys(oilByDate)])]
+    .filter(d => d >= start && d <= end).sort();
+
+  const fareVals = allDates.map(d => fareByDate[d] ?? null);
+  const oilVals = allDates.map(d => oilByDate[d] ?? null);
+
+  const paired = allDates.filter(d => fareByDate[d] != null && oilByDate[d] != null);
+  const r = pearson(paired.map(d => fareByDate[d]), paired.map(d => oilByDate[d]));
+  const badge = document.getElementById('corrBadge');
+  if (r !== null) {
+    const abs = Math.abs(r);
+    const strength = abs > 0.7 ? 'strong' : abs > 0.4 ? 'moderate' : 'weak';
+    const dir = r > 0 ? 'positive' : 'negative';
+    const cls = r > 0.1 ? 'positive' : r < -0.1 ? 'negative' : 'neutral';
+    badge.innerHTML = `<span class="badge ${cls}">r = ${r.toFixed(2)} (${strength} ${dir})</span>
+      <span style="color:#888;font-size:0.8em;margin-left:8px">Tracking ${paired.length} days of data</span>`;
+  } else {
+    badge.innerHTML = '<span class="badge neutral">Insufficient data for correlation</span>';
+  }
+
+  if (chart1) chart1.destroy();
+  chart1 = new Chart(document.getElementById('chart1'), {
+    type: 'line',
+    data: {
+      labels: allDates,
+      datasets: [
+        {
+          label: 'Avg Cheapest Fare ($)',
+          data: fareVals,
+          borderColor: '#00d4ff',
+          backgroundColor: 'rgba(0,212,255,0.1)',
+          yAxisID: 'y',
+          tension: 0.3, pointRadius: 2, spanGaps: true,
+        },
+        {
+          label: 'WTI Crude ($/barrel)',
+          data: oilVals,
+          borderColor: '#ff6b6b',
+          backgroundColor: 'rgba(255,107,107,0.1)',
+          yAxisID: 'y1',
+          tension: 0.3, pointRadius: 2, spanGaps: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#ccc' } } },
+      scales: {
+        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#1a1a2e' } },
+        y: { position: 'left', title: { display: true, text: 'Fare ($)', color: '#00d4ff' },
+             ticks: { color: '#00d4ff' }, grid: { color: '#1a1a2e' } },
+        y1: { position: 'right', title: { display: true, text: 'WTI ($/bbl)', color: '#ff6b6b' },
+              ticks: { color: '#ff6b6b' }, grid: { drawOnChartArea: false } },
+      }
+    }
+  });
+}
+
+function renderTab2() {
+  const target = selectedTarget();
+  const corridors = selectedCorridors();
+  const [start, end] = dateRange();
+  const nonstopOnly = document.querySelector('#nonstopToggle .toggle-btn.active')?.dataset.val === 'nonstop';
+
+  let filtered = DATA.flights.filter(f =>
+    f.target_date === target &&
+    corridors.includes(f.corridor) &&
+    f.observed_date >= start && f.observed_date <= end
+  );
+  if (nonstopOnly) filtered = filtered.filter(f => f.is_nonstop);
+
+  const byCorridor = {};
+  filtered.forEach(f => {
+    if (!byCorridor[f.corridor]) byCorridor[f.corridor] = {};
+    if (!byCorridor[f.corridor][f.observed_date] || f.price < byCorridor[f.corridor][f.observed_date])
+      byCorridor[f.corridor][f.observed_date] = f.price;
+  });
+
+  const allDates = [...new Set(filtered.map(f => f.observed_date))].sort();
+  const datasets = Object.keys(byCorridor).sort().map((c, i) => ({
+    label: c,
+    data: allDates.map(d => byCorridor[c][d] ?? null),
+    borderColor: COLORS[i % COLORS.length],
+    tension: 0.3, pointRadius: 2, spanGaps: true,
+  }));
+
+  if (chart2) chart2.destroy();
+  chart2 = new Chart(document.getElementById('chart2'), {
+    type: 'line',
+    data: { labels: allDates, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#ccc' } } },
+      scales: {
+        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#1a1a2e' } },
+        y: { title: { display: true, text: 'Cheapest Fare ($)', color: '#ccc' },
+             ticks: { color: '#ccc' }, grid: { color: '#1a1a2e' } },
+      }
+    }
+  });
+}
+
+function renderTab3() {
+  const corridors = selectedCorridors();
+  const latestDate = getObsDates().slice(-1)[0];
+  if (!latestDate) return;
+
+  const latest = DATA.flights.filter(f =>
+    f.observed_date === latestDate && corridors.includes(f.corridor)
+  );
+
+  const targets = getTargetDates();
+  const byCorridor = {};
+  latest.forEach(f => {
+    if (!byCorridor[f.corridor]) byCorridor[f.corridor] = {};
+    if (!byCorridor[f.corridor][f.target_date] || f.price < byCorridor[f.corridor][f.target_date])
+      byCorridor[f.corridor][f.target_date] = f.price;
+  });
+
+  const datasets = Object.keys(byCorridor).sort().map((c, i) => ({
+    label: c,
+    data: targets.map(t => byCorridor[c]?.[t] ?? null),
+    backgroundColor: COLORS[i % COLORS.length] + '99',
+    borderColor: COLORS[i % COLORS.length],
+    borderWidth: 1,
+  }));
+
+  if (chart3) chart3.destroy();
+  chart3 = new Chart(document.getElementById('chart3'), {
+    type: 'bar',
+    data: { labels: targets, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#ccc' } },
+        title: { display: true, text: `Forward Booking Snapshot (${latestDate})`, color: '#ccc' }
+      },
+      scales: {
+        x: { ticks: { color: '#888' }, grid: { color: '#1a1a2e' } },
+        y: { title: { display: true, text: 'Price ($)', color: '#ccc' },
+             ticks: { color: '#ccc' }, grid: { color: '#1a1a2e' } },
+      }
+    }
+  });
+}
+
+function renderTab4() {
+  const corridors = selectedCorridors();
+  const dates = getObsDates();
+  const latestDate = dates.slice(-1)[0];
+  if (!latestDate) return;
+
+  const d7 = new Date(latestDate);
+  d7.setDate(d7.getDate() - 7);
+  const d7str = d7.toISOString().slice(0, 10);
+  const prevDate = dates.filter(d => d <= d7str).slice(-1)[0];
+
+  const latest = DATA.flights.filter(f =>
+    f.observed_date === latestDate && corridors.includes(f.corridor)
+  );
+  const prev = prevDate ? DATA.flights.filter(f =>
+    f.observed_date === prevDate && corridors.includes(f.corridor)
+  ) : [];
+
+  const prevLookup = {};
+  prev.forEach(f => {
+    const key = `${f.corridor}|${f.target_date}|${f.airline}`;
+    if (!prevLookup[key] || f.price < prevLookup[key]) prevLookup[key] = f.price;
+  });
+
+  const tbody = document.querySelector('#airlineTable tbody');
+  tbody.innerHTML = '';
+
+  const seen = {};
+  const rows = [];
+  latest.sort((a, b) => a.price - b.price).forEach(f => {
+    const key = `${f.corridor}|${f.target_date}|${f.airline}`;
+    if (seen[key]) return;
+    seen[key] = true;
+    const prevPrice = prevLookup[key];
+    let changeHtml = '<span class="price-flat">&mdash;</span>';
+    if (prevPrice != null) {
+      const diff = f.price - prevPrice;
+      if (diff > 0) changeHtml = `<span class="price-up">\u25b2$${diff.toFixed(0)}</span>`;
+      else if (diff < 0) changeHtml = `<span class="price-down">\u25bc$${Math.abs(diff).toFixed(0)}</span>`;
+    }
+    rows.push({ ...f, changeHtml });
+  });
+
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    const ns = r.is_nonstop ? '<span class="nonstop-yes">Yes</span>' : '<span class="nonstop-no">No</span>';
+    tr.innerHTML = `<td>${r.corridor}</td><td>${r.target_date}</td><td>${r.airline}</td>
+      <td>$${r.price.toFixed(0)}</td><td>${ns}</td><td>${r.changeHtml}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll('#airlineTable th').forEach(th => {
+    th.onclick = () => {
+      const col = th.dataset.col;
+      const rowEls = [...tbody.querySelectorAll('tr')];
+      const dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+      th.dataset.dir = dir;
+      rowEls.sort((a, b) => {
+        let av = a.children[['corridor','target_date','airline','price','is_nonstop','change'].indexOf(col)].textContent;
+        let bv = b.children[['corridor','target_date','airline','price','is_nonstop','change'].indexOf(col)].textContent;
+        if (col === 'price') { av = parseFloat(av.replace('$','')); bv = parseFloat(bv.replace('$','')); }
+        if (av < bv) return dir === 'asc' ? -1 : 1;
+        if (av > bv) return dir === 'asc' ? 1 : -1;
+        return 0;
+      });
+      rowEls.forEach(r => tbody.appendChild(r));
+    };
+  });
+}
+
+// --- Tab 5: Analysis & Insights ---
+function renderTab5() {
+  renderCorrelationPanel();
+  renderTakeaways();
+  renderMomentumChart();
+}
+
+function renderCorrelationPanel() {
+  const corridors = getCorridors();
+  const obsDates = getObsDates();
+  const oilByDate = {};
+  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+
+  const tbody = document.querySelector('#corrTable tbody');
+  tbody.innerHTML = '';
+  const summaries = [];
+
+  corridors.forEach(corridor => {
+    // Get cheapest fare per observation date for this corridor (across all target dates)
+    const fareByDate = {};
+    DATA.flights.filter(f => f.corridor === corridor).forEach(f => {
+      if (!fareByDate[f.observed_date] || f.price < fareByDate[f.observed_date])
+        fareByDate[f.observed_date] = f.price;
+    });
+
+    // Build aligned time series
+    const commonDates = obsDates.filter(d => fareByDate[d] != null && oilByDate[d] != null);
+
+    // Same-day correlation
+    const r0 = commonDates.length >= 3
+      ? pearson(commonDates.map(d => fareByDate[d]), commonDates.map(d => oilByDate[d]))
+      : null;
+
+    // 7-day lag: compare fare[t] with oil[t-7]
+    const r7 = computeLagCorrelation(fareByDate, oilByDate, obsDates, 7);
+
+    // 14-day lag: compare fare[t] with oil[t-14]
+    const r14 = computeLagCorrelation(fareByDate, oilByDate, obsDates, 14);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${corridor}</td>
+      <td class="${corrClass(r0)}">${fmtR(r0)}</td>
+      <td class="${corrClass(r7)}">${fmtR(r7)}</td>
+      <td class="${corrClass(r14)}">${fmtR(r14)}</td>`;
+    tbody.appendChild(tr);
+
+    // Build summary
+    const best = bestLag(r0, r7, r14);
+    if (best.r !== null) {
+      const strength = Math.abs(best.r) > 0.6 ? 'strong' : Math.abs(best.r) > 0.3 ? 'moderate' : 'weak';
+      const dir = best.r > 0 ? 'positive' : 'negative';
+      const lagText = best.lag === 0 ? 'same-day' : `~${best.lag}-day lag`;
+      summaries.push(
+        `<strong>${corridor}</strong> shows a ${strength} ${dir} correlation ` +
+        `(r=${best.r.toFixed(2)}) with oil prices` +
+        (best.lag > 0 ? `, with fares typically repricing at a ${lagText}.` : '.')
+      );
+    }
+  });
+
+  const summaryDiv = document.getElementById('corrSummary');
+  if (summaries.length > 0) {
+    summaryDiv.innerHTML = summaries.join('<br>');
+  } else {
+    summaryDiv.innerHTML = 'Insufficient data for correlation analysis. As daily observations accumulate, ' +
+      'this panel will show how airfare movements relate to oil price changes across corridors.';
+  }
+}
+
+function computeLagCorrelation(fareByDate, oilByDate, allDates, lagDays) {
+  const pairs = [];
+  allDates.forEach(d => {
+    if (fareByDate[d] == null) return;
+    const lagDate = new Date(d);
+    lagDate.setDate(lagDate.getDate() - lagDays);
+    const lagStr = lagDate.toISOString().slice(0, 10);
+    // Find nearest oil date within 2 days of lag target
+    let oilVal = oilByDate[lagStr];
+    if (oilVal == null) {
+      for (let off = 1; off <= 2; off++) {
+        const d1 = new Date(lagDate); d1.setDate(d1.getDate() - off);
+        const d2 = new Date(lagDate); d2.setDate(d2.getDate() + off);
+        if (oilByDate[d1.toISOString().slice(0, 10)] != null) { oilVal = oilByDate[d1.toISOString().slice(0, 10)]; break; }
+        if (oilByDate[d2.toISOString().slice(0, 10)] != null) { oilVal = oilByDate[d2.toISOString().slice(0, 10)]; break; }
+      }
+    }
+    if (oilVal != null) pairs.push([fareByDate[d], oilVal]);
+  });
+  if (pairs.length < 3) return null;
+  return pearson(pairs.map(p => p[0]), pairs.map(p => p[1]));
+}
+
+function corrClass(r) {
+  if (r === null) return 'corr-weak';
+  const abs = Math.abs(r);
+  if (abs > 0.6) return 'corr-strong';
+  if (abs > 0.3) return 'corr-moderate';
+  return 'corr-weak';
+}
+
+function fmtR(r) {
+  return r !== null ? r.toFixed(2) : 'n/a';
+}
+
+function bestLag(r0, r7, r14) {
+  const candidates = [
+    { r: r0, lag: 0 },
+    { r: r7, lag: 7 },
+    { r: r14, lag: 14 },
+  ].filter(c => c.r !== null);
+  if (candidates.length === 0) return { r: null, lag: 0 };
+  return candidates.reduce((best, c) => Math.abs(c.r) > Math.abs(best.r) ? c : best);
+}
+
+function renderTakeaways() {
+  const list = document.getElementById('takeawayList');
+  list.innerHTML = '';
+  const items = [];
+  const obsDates = getObsDates();
+  const latestDate = obsDates.slice(-1)[0];
+  if (!latestDate) {
+    list.innerHTML = '<li>No data available yet.</li>';
+    return;
+  }
+
+  const corridors = getCorridors();
+  const oilByDate = {};
+  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+
+  // Find 7 days ago
+  const d7 = new Date(latestDate);
+  d7.setDate(d7.getDate() - 7);
+  const d7str = d7.toISOString().slice(0, 10);
+  const prevDate = obsDates.filter(d => d <= d7str).slice(-1)[0];
+
+  // 1. Which corridor moved most in last 7 days
+  if (prevDate) {
+    let biggestMove = null;
+    corridors.forEach(c => {
+      const latestPrice = cheapestForCorridor(c, latestDate);
+      const prevPrice = cheapestForCorridor(c, prevDate);
+      if (latestPrice != null && prevPrice != null) {
+        const change = latestPrice - prevPrice;
+        const pct = (change / prevPrice) * 100;
+        if (!biggestMove || Math.abs(pct) > Math.abs(biggestMove.pct))
+          biggestMove = { corridor: c, change, pct, latest: latestPrice, prev: prevPrice };
+      }
+    });
+    if (biggestMove) {
+      const arrow = biggestMove.change > 0 ? '\u25b2' : '\u25bc';
+      const cls = biggestMove.change > 0 ? 'price-up' : 'price-down';
+      items.push(`<span class="takeaway-label label-trend">TREND</span> ` +
+        `<strong>${biggestMove.corridor}</strong> moved the most in the past 7 days: ` +
+        `<span class="${cls}">${arrow}$${Math.abs(biggestMove.change).toFixed(0)} (${biggestMove.pct > 0 ? '+' : ''}${biggestMove.pct.toFixed(1)}%)</span>`);
+    }
+  }
+
+  // 2. Which target date has highest volatility
+  const targetVol = {};
+  getTargetDates().forEach(target => {
+    const prices = [];
+    obsDates.forEach(d => {
+      const cheapest = cheapestForTarget(target, d);
+      if (cheapest != null) prices.push(cheapest);
+    });
+    if (prices.length >= 2) {
+      const mean = prices.reduce((a,b) => a+b, 0) / prices.length;
+      const variance = prices.reduce((a, p) => a + (p - mean) ** 2, 0) / prices.length;
+      targetVol[target] = { std: Math.sqrt(variance), spread: Math.max(...prices) - Math.min(...prices), mean };
+    }
+  });
+  const mostVolatile = Object.entries(targetVol).sort((a, b) => b[1].std - a[1].std)[0];
+  if (mostVolatile) {
+    items.push(`<span class="takeaway-label label-vol">VOLATILITY</span> ` +
+      `<strong>${mostVolatile[0]}</strong> has the highest price volatility ` +
+      `(std dev: $${mostVolatile[1].std.toFixed(0)}, spread: $${mostVolatile[1].spread.toFixed(0)})`);
+  }
+
+  // 3. Oil trend vs airfare
+  const latestOil = DATA.oil_prices.slice(-1)[0];
+  if (latestOil && DATA.oil_prices.length >= 2) {
+    const oilDates = DATA.oil_prices.map(o => o.date).sort();
+    const d7oil = new Date(oilDates.slice(-1)[0]);
+    d7oil.setDate(d7oil.getDate() - 7);
+    const prevOil = DATA.oil_prices.filter(o => o.date <= d7oil.toISOString().slice(0, 10)).slice(-1)[0];
+    if (prevOil) {
+      const oilChange = latestOil.wti_price - prevOil.wti_price;
+      const oilDir = oilChange > 0 ? 'up' : 'down';
+      const oilArrow = oilChange > 0 ? '\u25b2' : '\u25bc';
+
+      // Check if avg airfare followed
+      const latestAvgFare = avgCheapestAcrossCorridors(latestDate);
+      const prevAvgFare = prevDate ? avgCheapestAcrossCorridors(prevDate) : null;
+      let fareFollowed = '';
+      if (prevAvgFare != null && latestAvgFare != null) {
+        const fareChange = latestAvgFare - prevAvgFare;
+        const sameDir = (oilChange > 0 && fareChange > 0) || (oilChange < 0 && fareChange < 0);
+        fareFollowed = sameDir
+          ? ' Airfares moved in the same direction.'
+          : ' Airfares moved in the opposite direction.';
+      }
+      items.push(`<span class="takeaway-label label-trend">OIL</span> ` +
+        `WTI crude is <strong>${oilDir}</strong> ${oilArrow}$${Math.abs(oilChange).toFixed(2)} vs 7 days ago ` +
+        `(now $${latestOil.wti_price.toFixed(2)}/bbl).${fareFollowed}`);
+    } else {
+      items.push(`<span class="takeaway-label label-trend">OIL</span> ` +
+        `WTI crude at <strong>$${latestOil.wti_price.toFixed(2)}/bbl</strong> (${latestOil.date}). Tracking started recently.`);
+    }
+  }
+
+  // 4. Cheapest corridor right now vs 30-day avg
+  let cheapestCorr = null;
+  corridors.forEach(c => {
+    const price = cheapestForCorridor(c, latestDate);
+    if (price != null && (!cheapestCorr || price < cheapestCorr.price))
+      cheapestCorr = { corridor: c, price };
+  });
+  if (cheapestCorr) {
+    // 30-day avg
+    const d30 = new Date(latestDate);
+    d30.setDate(d30.getDate() - 30);
+    const prices30 = [];
+    obsDates.filter(d => d >= d30.toISOString().slice(0, 10)).forEach(d => {
+      const p = cheapestForCorridor(cheapestCorr.corridor, d);
+      if (p != null) prices30.push(p);
+    });
+    let vsAvg = '';
+    if (prices30.length >= 2) {
+      const avg30 = prices30.reduce((a,b) => a+b, 0) / prices30.length;
+      const diff = cheapestCorr.price - avg30;
+      const pct = (diff / avg30) * 100;
+      vsAvg = diff > 0
+        ? `, ${pct.toFixed(1)}% above its 30-day avg`
+        : `, ${Math.abs(pct).toFixed(1)}% below its 30-day avg`;
+    }
+    items.push(`<span class="takeaway-label label-value">VALUE</span> ` +
+      `Cheapest corridor today: <strong>${cheapestCorr.corridor}</strong> at $${cheapestCorr.price.toFixed(0)}${vsAvg}`);
+  }
+
+  // 5. Booking signals — target dates >15% above observed average
+  const signals = [];
+  getTargetDates().forEach(target => {
+    corridors.forEach(corridor => {
+      const currentPrice = cheapestForCorridorTarget(corridor, target, latestDate);
+      if (currentPrice == null) return;
+      const allPrices = [];
+      obsDates.forEach(d => {
+        const p = cheapestForCorridorTarget(corridor, target, d);
+        if (p != null) allPrices.push(p);
+      });
+      if (allPrices.length < 2) return;
+      const avg = allPrices.reduce((a,b) => a+b, 0) / allPrices.length;
+      const pctAbove = ((currentPrice - avg) / avg) * 100;
+      if (pctAbove > 15) {
+        signals.push({ corridor, target, currentPrice, avg, pctAbove });
+      }
+    });
+  });
+  if (signals.length > 0) {
+    signals.sort((a, b) => b.pctAbove - a.pctAbove);
+    const top = signals.slice(0, 3);
+    const signalText = top.map(s =>
+      `${s.corridor} on ${s.target} ($${s.currentPrice.toFixed(0)}, +${s.pctAbove.toFixed(0)}% vs avg)`
+    ).join('; ');
+    items.push(`<span class="takeaway-label label-signal">SIGNAL</span> ` +
+      `Elevated fares (>15% above avg) — consider impact on demand: <strong>${signalText}</strong>`);
+  }
+
+  if (items.length === 0) {
+    items.push('Accumulating data. Takeaways will auto-generate as daily observations grow.');
+  }
+
+  list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
+}
+
+function cheapestForCorridor(corridor, obsDate) {
+  let min = null;
+  DATA.flights.filter(f => f.corridor === corridor && f.observed_date === obsDate).forEach(f => {
+    if (min === null || f.price < min) min = f.price;
+  });
+  return min;
+}
+
+function cheapestForTarget(target, obsDate) {
+  let min = null;
+  DATA.flights.filter(f => f.target_date === target && f.observed_date === obsDate).forEach(f => {
+    if (min === null || f.price < min) min = f.price;
+  });
+  return min;
+}
+
+function cheapestForCorridorTarget(corridor, target, obsDate) {
+  let min = null;
+  DATA.flights.filter(f => f.corridor === corridor && f.target_date === target && f.observed_date === obsDate).forEach(f => {
+    if (min === null || f.price < min) min = f.price;
+  });
+  return min;
+}
+
+function avgCheapestAcrossCorridors(obsDate) {
+  const corridors = getCorridors();
+  const prices = corridors.map(c => cheapestForCorridor(c, obsDate)).filter(p => p != null);
+  if (prices.length === 0) return null;
+  return prices.reduce((a,b) => a+b, 0) / prices.length;
+}
+
+function renderMomentumChart() {
+  const corridors = selectedCorridors();
+  const obsDates = getObsDates();
+  const oilByDate = {};
+  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+
+  // Union of obs dates and oil dates for the x-axis
+  const allDates = [...new Set([...obsDates, ...DATA.oil_prices.map(o => o.date)])].sort();
+
+  const datasets = [];
+
+  // Oil 7-day rolling avg, normalized
+  const oilRaw = allDates.map(d => oilByDate[d] ?? null);
+  const oilRolling = rollingAvg(oilRaw, 7);
+  const oilNorm = normalize0100(oilRolling);
+  datasets.push({
+    label: 'WTI Oil (7d avg)',
+    data: oilNorm,
+    borderColor: '#ff6b6b',
+    borderWidth: 3,
+    borderDash: [6, 3],
+    tension: 0.3, pointRadius: 0, spanGaps: true,
+  });
+
+  // Each corridor 7-day rolling avg, normalized
+  corridors.forEach((c, i) => {
+    const fareByDate = {};
+    DATA.flights.filter(f => f.corridor === c).forEach(f => {
+      if (!fareByDate[f.observed_date] || f.price < fareByDate[f.observed_date])
+        fareByDate[f.observed_date] = f.price;
+    });
+    const fareRaw = allDates.map(d => fareByDate[d] ?? null);
+    const fareRolling = rollingAvg(fareRaw, 7);
+    const fareNorm = normalize0100(fareRolling);
+    datasets.push({
+      label: c,
+      data: fareNorm,
+      borderColor: COLORS[i % COLORS.length],
+      borderWidth: 2,
+      tension: 0.3, pointRadius: 1, spanGaps: true,
+    });
+  });
+
+  if (chart5) chart5.destroy();
+  chart5 = new Chart(document.getElementById('chart5'), {
+    type: 'line',
+    data: { labels: allDates, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#ccc' } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1) ?? 'n/a'} (normalized)`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#1a1a2e' } },
+        y: {
+          min: 0, max: 100,
+          title: { display: true, text: 'Normalized (0 = min, 100 = max)', color: '#ccc' },
+          ticks: { color: '#ccc' }, grid: { color: '#1a1a2e' }
+        },
+      }
+    }
+  });
+}
+
+loadData();
+</script>
+</body>
+</html>

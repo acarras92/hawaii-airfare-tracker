@@ -1,0 +1,52 @@
+name: Daily Oil Price & Dashboard Update
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # 7am ET / 4am PT
+  workflow_dispatch:
+    inputs:
+      full_collection:
+        description: 'Also collect flights via SerpAPI (requires SERPAPI_KEY secret)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install requests
+
+      # Daily: always collect oil prices and rebuild dashboard
+      - name: Collect oil prices
+        run: python collect_data.py --oil-only
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+
+      # Optional: full flight collection via SerpAPI (manual trigger only)
+      - name: Collect flights (SerpAPI)
+        if: github.event.inputs.full_collection == 'true'
+        run: python collect_data.py --source serpapi --skip-oil
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+
+      - name: Build dashboard
+        run: python build_dashboard.py
+
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/ docs/
+          git diff --staged --quiet || git commit -m "Daily update $(date -u +%Y-%m-%d)"
+          git push
