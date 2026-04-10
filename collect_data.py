@@ -26,6 +26,8 @@ import requests
 CORRIDORS = [
     ("LAX", "HNL"), ("SFO", "HNL"), ("JFK", "HNL"),
     ("SEA", "HNL"), ("LAX", "OGG"), ("SFO", "OGG"),
+    ("NRT", "HNL"), ("HND", "HNL"), ("KIX", "HNL"),
+    ("ICN", "HNL"),
 ]
 
 TARGET_DATES = [

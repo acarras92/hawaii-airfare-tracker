@@ -74,7 +74,9 @@ h1{{color:#00d4ff;font-size:1.6em;margin-bottom:4px}}
 .controls{{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 16px;background:#1a1a2e;border-radius:8px;margin-bottom:16px}}
 .controls label{{color:#aaa;font-size:.8em}}
 .controls select{{background:#252540;color:#e0e0e0;border:1px solid #333;padding:4px 8px;border-radius:4px;font-size:.85em}}
-.checks{{display:flex;flex-wrap:wrap;gap:8px}}
+.checks{{display:flex;flex-wrap:wrap;gap:12px}}
+.corr-group{{display:flex;flex-wrap:wrap;align-items:center;gap:4px}}
+.corr-group strong{{color:#888;font-size:.75em;margin-right:2px}}
 .checks label{{display:flex;align-items:center;gap:4px;background:#252540;padding:2px 8px;border-radius:4px;cursor:pointer}}
 .tabs{{display:flex;gap:0;border-bottom:2px solid #252540;flex-wrap:wrap}}
 .tab{{padding:8px 20px;cursor:pointer;border:none;background:#1a1a2e;color:#888;font-size:.85em;border-radius:6px 6px 0 0}}
@@ -125,7 +127,7 @@ tr:hover td{{background:#1a1a2e}}
 <script>
 const DATA = {data_json};
 
-const COLORS = ['#00d4ff','#ff6b6b','#4cff8e','#ffd93d','#c084fc','#f97316','#22d3ee','#e879f9'];
+const COLORS = ['#00d4ff','#ff6b6b','#4cff8e','#ffd93d','#c084fc','#f97316','#22d3ee','#e879f9','#fb7185','#a3e635'];
 const TAB_NAMES = ['Oil vs Airfare','By Corridor','Booking Snapshot','Airline Breakdown','Analysis & Insights'];
 
 // ---- helpers ----
@@ -158,12 +160,25 @@ function initControls() {{
   sel.onchange = renderActive;
 
   const box = document.getElementById('corrChecks');
-  corridors().forEach(c => {{
-    const lbl = document.createElement('label');
-    lbl.innerHTML = '<input type="checkbox" value="'+c+'" checked> '+c;
-    lbl.querySelector('input').onchange = renderActive;
-    box.appendChild(lbl);
-  }});
+  const ASIA_PREFIXES = ['NRT','HND','KIX','ICN'];
+  const allCorrs = corridors();
+  const usCorrs = allCorrs.filter(c => !ASIA_PREFIXES.includes(c.split('-')[0]));
+  const asiaCorrs = allCorrs.filter(c => ASIA_PREFIXES.includes(c.split('-')[0]));
+  function addGroup(label, corrs) {{
+    if (!corrs.length) return;
+    const grp = document.createElement('span');
+    grp.className = 'corr-group';
+    grp.innerHTML = '<strong>'+label+':</strong> ';
+    corrs.forEach(c => {{
+      const lbl = document.createElement('label');
+      lbl.innerHTML = '<input type="checkbox" value="'+c+'" checked> '+c;
+      lbl.querySelector('input').onchange = renderActive;
+      grp.appendChild(lbl);
+    }});
+    box.appendChild(grp);
+  }}
+  addGroup('US Mainland', usCorrs);
+  addGroup('Asia/Pacific', asiaCorrs);
 
   if (DATA.last_updated) {{
     document.getElementById('updated').textContent =
