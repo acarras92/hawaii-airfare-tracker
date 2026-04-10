@@ -6,972 +6,456 @@
 <title>Hawaii Airfare vs Oil Price Tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #0f0f1a;
-    color: #e0e0e0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
-    padding: 20px;
-  }
-  h1 { color: #00d4ff; font-size: 1.6em; margin-bottom: 4px; }
-  .subtitle { color: #888; font-size: 0.85em; margin-bottom: 16px; }
-  .controls {
-    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-    padding: 12px 16px; background: #1a1a2e; border-radius: 8px; margin-bottom: 16px;
-  }
-  .controls label { color: #aaa; font-size: 0.8em; }
-  .controls select, .controls input {
-    background: #252540; color: #e0e0e0; border: 1px solid #333;
-    padding: 4px 8px; border-radius: 4px; font-size: 0.85em;
-  }
-  .corridor-checks { display: flex; flex-wrap: wrap; gap: 8px; }
-  .corridor-checks label {
-    display: flex; align-items: center; gap: 4px;
-    background: #252540; padding: 2px 8px; border-radius: 4px; cursor: pointer;
-  }
-  .tabs {
-    display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid #252540;
-    flex-wrap: wrap;
-  }
-  .tab {
-    padding: 8px 20px; cursor: pointer; border: none; background: #1a1a2e;
-    color: #888; font-size: 0.85em; border-radius: 6px 6px 0 0; transition: 0.2s;
-  }
-  .tab.active { background: #252540; color: #00d4ff; }
-  .tab:hover { color: #00d4ff; }
-  .tab-content { display: none; background: #252540; padding: 20px; border-radius: 0 0 8px 8px; }
-  .tab-content.active { display: block; }
-  .chart-wrap { position: relative; height: 400px; margin: 8px 0; }
-  .badge {
-    display: inline-block; padding: 4px 12px; border-radius: 12px;
-    font-size: 0.8em; font-weight: 600; margin: 8px 0;
-  }
-  .badge.positive { background: #1a3a2a; color: #4cff8e; }
-  .badge.negative { background: #3a1a1a; color: #ff6b6b; }
-  .badge.neutral { background: #2a2a3a; color: #aaa; }
-  table {
-    width: 100%; border-collapse: collapse; font-size: 0.85em; margin-top: 8px;
-  }
-  th {
-    text-align: left; padding: 8px 12px; border-bottom: 2px solid #333;
-    color: #00d4ff; cursor: pointer; user-select: none;
-  }
-  th:hover { color: #fff; }
-  td { padding: 6px 12px; border-bottom: 1px solid #1a1a2e; }
-  tr:hover td { background: #1a1a2e; }
-  .price-up { color: #ff6b6b; }
-  .price-down { color: #4cff8e; }
-  .price-flat { color: #888; }
-  .nonstop-yes { color: #4cff8e; }
-  .nonstop-no { color: #888; }
-  .toggle-group { display: flex; gap: 0; }
-  .toggle-btn {
-    padding: 4px 12px; border: 1px solid #333; background: #1a1a2e;
-    color: #888; cursor: pointer; font-size: 0.8em;
-  }
-  .toggle-btn:first-child { border-radius: 4px 0 0 4px; }
-  .toggle-btn:last-child { border-radius: 0 4px 4px 0; }
-  .toggle-btn.active { background: #00d4ff; color: #0f0f1a; border-color: #00d4ff; }
-  #lastUpdated { color: #666; font-size: 0.75em; }
-
-  /* Tab 5: Analysis & Insights */
-  .insights-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-  }
-  @media (max-width: 900px) { .insights-grid { grid-template-columns: 1fr; } }
-  .insight-panel {
-    background: #1a1a2e; border-radius: 8px; padding: 16px;
-    border: 1px solid #252540;
-  }
-  .insight-panel h3 {
-    color: #00d4ff; font-size: 0.95em; margin-bottom: 10px;
-    border-bottom: 1px solid #333; padding-bottom: 6px;
-  }
-  .insight-panel.full-width { grid-column: 1 / -1; }
-  .corr-table { width: 100%; font-size: 0.82em; }
-  .corr-table th { padding: 6px 8px; font-size: 0.85em; }
-  .corr-table td { padding: 5px 8px; text-align: center; }
-  .corr-table td:first-child { text-align: left; font-weight: 600; }
-  .corr-strong { color: #4cff8e; }
-  .corr-moderate { color: #ffd93d; }
-  .corr-weak { color: #888; }
-  .takeaway-list {
-    list-style: none; padding: 0;
-  }
-  .takeaway-list li {
-    padding: 8px 0; border-bottom: 1px solid #252540;
-    font-size: 0.85em; line-height: 1.5;
-  }
-  .takeaway-list li:last-child { border-bottom: none; }
-  .takeaway-label {
-    display: inline-block; font-size: 0.75em; font-weight: 600;
-    padding: 2px 8px; border-radius: 4px; margin-right: 6px;
-  }
-  .label-signal { background: #3a1a1a; color: #ff6b6b; }
-  .label-trend { background: #1a2a3a; color: #00d4ff; }
-  .label-value { background: #1a3a2a; color: #4cff8e; }
-  .label-vol { background: #2a2a1a; color: #ffd93d; }
-  .summary-text {
-    font-size: 0.85em; color: #bbb; line-height: 1.6;
-    margin-top: 8px; padding: 10px; background: #0f0f1a; border-radius: 6px;
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,monospace;padding:20px}
+h1{color:#00d4ff;font-size:1.6em;margin-bottom:4px}
+.sub{color:#888;font-size:.85em;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 16px;background:#1a1a2e;border-radius:8px;margin-bottom:16px}
+.controls label{color:#aaa;font-size:.8em}
+.controls select{background:#252540;color:#e0e0e0;border:1px solid #333;padding:4px 8px;border-radius:4px;font-size:.85em}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks label{display:flex;align-items:center;gap:4px;background:#252540;padding:2px 8px;border-radius:4px;cursor:pointer}
+.tabs{display:flex;gap:0;border-bottom:2px solid #252540;flex-wrap:wrap}
+.tab{padding:8px 20px;cursor:pointer;border:none;background:#1a1a2e;color:#888;font-size:.85em;border-radius:6px 6px 0 0}
+.tab.active{background:#252540;color:#00d4ff}
+.tab:hover{color:#00d4ff}
+.pane{display:none;background:#252540;padding:20px;border-radius:0 0 8px 8px}
+.pane.active{display:block}
+.chart-box{position:relative;height:420px;margin:8px 0}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{text-align:left;padding:8px 12px;border-bottom:2px solid #333;color:#00d4ff;cursor:pointer;user-select:none}
+th:hover{color:#fff}
+td{padding:6px 12px;border-bottom:1px solid #1a1a2e}
+tr:hover td{background:#1a1a2e}
+.card{background:#1a1a2e;border-radius:8px;padding:16px;margin-bottom:12px;border:1px solid #252540}
+.card h3{color:#00d4ff;font-size:.95em;margin-bottom:8px;border-bottom:1px solid #333;padding-bottom:6px}
+.card p,.card li{font-size:.85em;line-height:1.6;color:#bbb}
+.card ul{list-style:none;padding:0}
+.card li{padding:4px 0;border-bottom:1px solid #252540}
+.card li:last-child{border-bottom:none}
+.accent{color:#00d4ff;font-weight:600}
+.green{color:#4cff8e}
+.red{color:#ff6b6b}
+.dim{color:#666}
+.info-box{background:#0f0f1a;border-radius:6px;padding:12px 16px;margin:8px 0;font-size:.85em;color:#aaa;border-left:3px solid #00d4ff}
+#updated{color:#666;font-size:.75em}
 </style>
 </head>
 <body>
 
 <h1>Hawaii Airfare vs. Oil Price Tracker</h1>
-<p class="subtitle">Daily tracking of airfares into Hawaii correlated with WTI crude oil prices</p>
+<p class="sub">Daily tracking of airfares into Hawaii correlated with WTI crude oil prices</p>
 
 <div class="controls">
   <div>
     <label>Target Date</label><br>
-    <select id="targetDateSelect"></select>
+    <select id="targetSel"></select>
   </div>
   <div>
     <label>Corridors</label><br>
-    <div class="corridor-checks" id="corridorChecks"></div>
+    <div class="checks" id="corrChecks"></div>
   </div>
-  <div>
-    <label>Observation Range</label><br>
-    <input type="date" id="rangeStart"> &ndash; <input type="date" id="rangeEnd">
-  </div>
-  <div id="lastUpdated"></div>
+  <div id="updated"></div>
 </div>
 
-<div class="tabs">
-  <button class="tab active" data-tab="tab1">Oil vs Airfare</button>
-  <button class="tab" data-tab="tab2">By Corridor</button>
-  <button class="tab" data-tab="tab3">Booking Snapshot</button>
-  <button class="tab" data-tab="tab4">Airline Breakdown</button>
-  <button class="tab" data-tab="tab5">Analysis &amp; Insights</button>
-</div>
+<div class="tabs" id="tabBar"></div>
+<div id="panes"></div>
 
-<div class="tab-content active" id="tab1">
-  <div id="corrBadge"></div>
-  <div class="chart-wrap"><canvas id="chart1"></canvas></div>
-</div>
-
-<div class="tab-content" id="tab2">
-  <div class="toggle-group" id="nonstopToggle">
-    <button class="toggle-btn active" data-val="all">All Fares</button>
-    <button class="toggle-btn" data-val="nonstop">Nonstop Only</button>
-  </div>
-  <div class="chart-wrap"><canvas id="chart2"></canvas></div>
-</div>
-
-<div class="tab-content" id="tab3">
-  <div class="chart-wrap" style="height:500px"><canvas id="chart3"></canvas></div>
-</div>
-
-<div class="tab-content" id="tab4">
-  <table id="airlineTable">
-    <thead>
-      <tr>
-        <th data-col="corridor">Corridor</th>
-        <th data-col="target_date">Target Date</th>
-        <th data-col="airline">Airline</th>
-        <th data-col="price">Price</th>
-        <th data-col="is_nonstop">Nonstop</th>
-        <th data-col="change">vs 7 Days Ago</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<div class="tab-content" id="tab5">
-  <div class="insights-grid">
-    <div class="insight-panel">
-      <h3>Oil-Airfare Correlation by Corridor</h3>
-      <table class="corr-table" id="corrTable">
-        <thead>
-          <tr><th>Corridor</th><th>r (same day)</th><th>r (7-day lag)</th><th>r (14-day lag)</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="summary-text" id="corrSummary"></div>
-    </div>
-    <div class="insight-panel">
-      <h3>Key Takeaways</h3>
-      <ul class="takeaway-list" id="takeawayList"></ul>
-    </div>
-    <div class="insight-panel full-width">
-      <h3>Price Momentum (7-Day Rolling Avg, Normalized 0-100)</h3>
-      <div class="chart-wrap"><canvas id="chart5"></canvas></div>
-    </div>
-  </div>
-</div>
-
-// __DATA_EMBED___START
-<script>const DATA_EMBED={"last_updated":"2026-04-10T15:50:05.593286+00:00","flights":[{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-06-15","airline":"American Airlines","price":480.0,"is_nonstop":0,"duration_mins":776},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-06-15","airline":"American Airlines","price":493.0,"is_nonstop":0,"duration_mins":727},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-06-15","airline":"American Airlines","price":521.0,"is_nonstop":0,"duration_mins":725},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":411.0,"is_nonstop":0,"duration_mins":723},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-04","airline":"Delta Air Lines","price":485.0,"is_nonstop":0,"duration_mins":693},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":562.0,"is_nonstop":1,"duration_mins":654},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":381.0,"is_nonstop":0,"duration_mins":737},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":403.0,"is_nonstop":0,"duration_mins":781},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":451.0,"is_nonstop":0,"duration_mins":709},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":428.0,"is_nonstop":0,"duration_mins":826},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":476.0,"is_nonstop":0,"duration_mins":738},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":591.0,"is_nonstop":0,"duration_mins":763},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-09-01","airline":"Alaska Airlines","price":335.0,"is_nonstop":0,"duration_mins":726},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-09-01","airline":"Delta Air Lines","price":345.0,"is_nonstop":0,"duration_mins":704},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-09-01","airline":"American Airlines","price":373.0,"is_nonstop":0,"duration_mins":714},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":409.0,"is_nonstop":0,"duration_mins":740},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-11-25","airline":"American Airlines","price":421.0,"is_nonstop":0,"duration_mins":758},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":442.0,"is_nonstop":0,"duration_mins":730},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-12-20","airline":"Delta Air Lines","price":651.0,"is_nonstop":0,"duration_mins":784},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-12-20","airline":"American Airlines","price":689.0,"is_nonstop":0,"duration_mins":810},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-12-20","airline":"Delta Air Lines","price":691.0,"is_nonstop":0,"duration_mins":782},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":411.0,"is_nonstop":0,"duration_mins":734},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":497.0,"is_nonstop":0,"duration_mins":730},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2027-01-15","airline":"American Airlines","price":517.0,"is_nonstop":0,"duration_mins":739},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-06-15","airline":"American Airlines","price":300.0,"is_nonstop":1,"duration_mins":346},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":313.0,"is_nonstop":1,"duration_mins":345},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":313.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-04","airline":"Delta Air Lines","price":273.0,"is_nonstop":1,"duration_mins":350},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-15","airline":"Southwest Airlines","price":208.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":208.0,"is_nonstop":1,"duration_mins":347},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":232.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":353},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-09-01","airline":"American Airlines","price":173.0,"is_nonstop":1,"duration_mins":356},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-09-01","airline":"Delta Air Lines","price":173.0,"is_nonstop":1,"duration_mins":356},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-09-01","airline":"United Airlines","price":173.0,"is_nonstop":1,"duration_mins":346},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-11-25","airline":"Delta Air Lines","price":227.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-11-25","airline":"American Airlines","price":227.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-11-25","airline":"American Airlines","price":227.0,"is_nonstop":1,"duration_mins":355},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-12-20","airline":"Alaska Airlines","price":409.0,"is_nonstop":1,"duration_mins":360},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-12-20","airline":"American Airlines","price":449.0,"is_nonstop":1,"duration_mins":349},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-12-20","airline":"American Airlines","price":449.0,"is_nonstop":1,"duration_mins":348},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":365},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2027-01-15","airline":"American Airlines","price":273.0,"is_nonstop":1,"duration_mins":370},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":379},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-06-15","airline":"United Airlines","price":287.0,"is_nonstop":0,"duration_mins":422},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-06-15","airline":"United Airlines","price":310.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-06-15","airline":"American Airlines","price":332.0,"is_nonstop":1,"duration_mins":339},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-04","airline":"Southwest Airlines","price":255.0,"is_nonstop":0,"duration_mins":380},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-04","airline":"Southwest Airlines","price":255.0,"is_nonstop":0,"duration_mins":400},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-04","airline":"Alaska Airlines","price":255.0,"is_nonstop":0,"duration_mins":387},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-15","airline":"Delta Air Lines","price":208.0,"is_nonstop":1,"duration_mins":339},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-15","airline":"United Airlines","price":208.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-15","airline":"American Airlines","price":208.0,"is_nonstop":1,"duration_mins":339},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-08-01","airline":"Alaska Airlines","price":255.0,"is_nonstop":0,"duration_mins":387},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-08-01","airline":"Southwest Airlines","price":265.0,"is_nonstop":0,"duration_mins":500},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-08-01","airline":"Southwest Airlines","price":315.0,"is_nonstop":0,"duration_mins":400},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-09-01","airline":"American Airlines","price":173.0,"is_nonstop":1,"duration_mins":345},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-09-01","airline":"Delta Air Lines","price":173.0,"is_nonstop":1,"duration_mins":351},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-09-01","airline":"Alaska Airlines","price":173.0,"is_nonstop":1,"duration_mins":346},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-11-25","airline":"Delta Air Lines","price":219.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-11-25","airline":"American Airlines","price":219.0,"is_nonstop":1,"duration_mins":351},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-11-25","airline":"American Airlines","price":219.0,"is_nonstop":1,"duration_mins":347},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":479.0,"is_nonstop":0,"duration_mins":400},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-12-20","airline":"Delta Air Lines","price":482.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":578.0,"is_nonstop":0,"duration_mins":440},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2027-01-15","airline":"Delta Air Lines","price":250.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2027-01-15","airline":"Alaska Airlines","price":250.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2027-01-15","airline":"American Airlines","price":250.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":299.0,"is_nonstop":0,"duration_mins":575},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-06-15","airline":"Alaska Airlines","price":400.0,"is_nonstop":0,"duration_mins":405},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-06-15","airline":"Delta Air Lines","price":402.0,"is_nonstop":1,"duration_mins":369},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-04","airline":"Southwest Airlines","price":342.0,"is_nonstop":0,"duration_mins":440},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-04","airline":"Southwest Airlines","price":342.0,"is_nonstop":0,"duration_mins":445},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-04","airline":"Southwest Airlines","price":342.0,"is_nonstop":0,"duration_mins":455},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-15","airline":"United Airlines","price":280.0,"is_nonstop":0,"duration_mins":477},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-15","airline":"Southwest Airlines","price":299.0,"is_nonstop":0,"duration_mins":595},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":315.0,"is_nonstop":0,"duration_mins":461},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-08-01","airline":"Southwest Airlines","price":348.0,"is_nonstop":0,"duration_mins":575},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-08-01","airline":"Southwest Airlines","price":352.0,"is_nonstop":0,"duration_mins":455},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":375.0,"is_nonstop":0,"duration_mins":469},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-09-01","airline":"United Airlines","price":209.0,"is_nonstop":0,"duration_mins":537},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-09-01","airline":"Southwest Airlines","price":209.0,"is_nonstop":0,"duration_mins":455},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-09-01","airline":"United Airlines","price":209.0,"is_nonstop":0,"duration_mins":470},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":355.0,"is_nonstop":0,"duration_mins":521},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":358.0,"is_nonstop":0,"duration_mins":489},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-11-25","airline":"American Airlines","price":361.0,"is_nonstop":0,"duration_mins":535},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-12-20","airline":"United Airlines","price":519.0,"is_nonstop":0,"duration_mins":527},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-12-20","airline":"American Airlines","price":536.0,"is_nonstop":0,"duration_mins":529},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-12-20","airline":"American Airlines","price":610.0,"is_nonstop":0,"duration_mins":532},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2027-01-15","airline":"United Airlines","price":388.0,"is_nonstop":0,"duration_mins":481},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":396.0,"is_nonstop":0,"duration_mins":530},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2027-01-15","airline":"Delta Air Lines","price":400.0,"is_nonstop":1,"duration_mins":386},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-06-15","airline":"United Airlines","price":315.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":347.0,"is_nonstop":0,"duration_mins":435},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-06-15","airline":"United Airlines","price":348.0,"is_nonstop":1,"duration_mins":323},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":335},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":323},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":209.0,"is_nonstop":0,"duration_mins":492},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":224.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":224.0,"is_nonstop":1,"duration_mins":329},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-08-01","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":329},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-08-01","airline":"United Airlines","price":308.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":325},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":330},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-11-25","airline":"United Airlines","price":243.0,"is_nonstop":1,"duration_mins":336},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-11-25","airline":"American Airlines","price":252.0,"is_nonstop":0,"duration_mins":447},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-11-25","airline":"United Airlines","price":270.0,"is_nonstop":1,"duration_mins":348},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-12-20","airline":"American Airlines","price":473.0,"is_nonstop":0,"duration_mins":453},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-12-20","airline":"Alaska Airlines","price":484.0,"is_nonstop":0,"duration_mins":454},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-12-20","airline":"United Airlines","price":612.0,"is_nonstop":0,"duration_mins":549},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2027-01-15","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":348},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":483},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2027-01-15","airline":"United Airlines","price":282.0,"is_nonstop":0,"duration_mins":464},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-06-15","airline":"United Airlines","price":221.0,"is_nonstop":1,"duration_mins":334},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-06-15","airline":"United Airlines","price":319.0,"is_nonstop":1,"duration_mins":337},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-06-15","airline":"Southwest Airlines","price":323.0,"is_nonstop":0,"duration_mins":515},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":330},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":324},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":331},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-15","airline":"Alaska Airlines","price":200.0,"is_nonstop":1,"duration_mins":324},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-15","airline":"Delta Air Lines","price":209.0,"is_nonstop":0,"duration_mins":425},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-15","airline":"Alaska Airlines","price":209.0,"is_nonstop":0,"duration_mins":498},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-08-01","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":337},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-08-01","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":334},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-08-01","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":498},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":333},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":335},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":335},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-11-25","airline":"United Airlines","price":243.0,"is_nonstop":1,"duration_mins":336},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-11-25","airline":"United Airlines","price":252.0,"is_nonstop":0,"duration_mins":462},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-11-25","airline":"American Airlines","price":252.0,"is_nonstop":0,"duration_mins":476},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":616.0,"is_nonstop":0,"duration_mins":476},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-12-20","airline":"American Airlines","price":670.0,"is_nonstop":0,"duration_mins":445},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":744.0,"is_nonstop":0,"duration_mins":432},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2027-01-15","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":432},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2027-01-15","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":504},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2027-01-15","airline":"United Airlines","price":316.0,"is_nonstop":1,"duration_mins":345}],"oil_prices":[{"date":"2026-04-07","wti_price":114.58}]};</script>
-// __DATA_EMBED___END
 <script>
-let DATA = { flights: [], oil_prices: [], last_updated: null };
-let chart1, chart2, chart3, chart5;
+const DATA = {"last_updated":"2026-04-10T16:12:23.825050+00:00","flights":[{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-06-15","airline":"American Airlines","price":480.0,"is_nonstop":0,"duration_mins":776},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-06-15","airline":"American Airlines","price":493.0,"is_nonstop":0,"duration_mins":727},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-06-15","airline":"American Airlines","price":521.0,"is_nonstop":0,"duration_mins":725},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":411.0,"is_nonstop":0,"duration_mins":723},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-04","airline":"Delta Air Lines","price":485.0,"is_nonstop":0,"duration_mins":693},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":562.0,"is_nonstop":1,"duration_mins":654},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":381.0,"is_nonstop":0,"duration_mins":737},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":403.0,"is_nonstop":0,"duration_mins":781},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":451.0,"is_nonstop":0,"duration_mins":709},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":428.0,"is_nonstop":0,"duration_mins":826},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":476.0,"is_nonstop":0,"duration_mins":738},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":591.0,"is_nonstop":0,"duration_mins":763},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-09-01","airline":"Alaska Airlines","price":335.0,"is_nonstop":0,"duration_mins":726},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-09-01","airline":"Delta Air Lines","price":345.0,"is_nonstop":0,"duration_mins":704},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-09-01","airline":"American Airlines","price":373.0,"is_nonstop":0,"duration_mins":714},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":409.0,"is_nonstop":0,"duration_mins":740},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-11-25","airline":"American Airlines","price":421.0,"is_nonstop":0,"duration_mins":758},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":442.0,"is_nonstop":0,"duration_mins":730},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-12-20","airline":"Delta Air Lines","price":651.0,"is_nonstop":0,"duration_mins":784},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-12-20","airline":"American Airlines","price":689.0,"is_nonstop":0,"duration_mins":810},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2026-12-20","airline":"Delta Air Lines","price":691.0,"is_nonstop":0,"duration_mins":782},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":411.0,"is_nonstop":0,"duration_mins":734},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":497.0,"is_nonstop":0,"duration_mins":730},{"observed_date":"2026-04-10","corridor":"JFK-HNL","target_date":"2027-01-15","airline":"American Airlines","price":517.0,"is_nonstop":0,"duration_mins":739},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-06-15","airline":"American Airlines","price":300.0,"is_nonstop":1,"duration_mins":346},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":313.0,"is_nonstop":1,"duration_mins":345},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":313.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-04","airline":"Delta Air Lines","price":273.0,"is_nonstop":1,"duration_mins":350},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-15","airline":"Southwest Airlines","price":208.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":208.0,"is_nonstop":1,"duration_mins":347},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":232.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":353},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-09-01","airline":"American Airlines","price":173.0,"is_nonstop":1,"duration_mins":356},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-09-01","airline":"Delta Air Lines","price":173.0,"is_nonstop":1,"duration_mins":356},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-09-01","airline":"United Airlines","price":173.0,"is_nonstop":1,"duration_mins":346},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-11-25","airline":"Delta Air Lines","price":227.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-11-25","airline":"American Airlines","price":227.0,"is_nonstop":1,"duration_mins":358},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-11-25","airline":"American Airlines","price":227.0,"is_nonstop":1,"duration_mins":355},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-12-20","airline":"Alaska Airlines","price":409.0,"is_nonstop":1,"duration_mins":360},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-12-20","airline":"American Airlines","price":449.0,"is_nonstop":1,"duration_mins":349},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2026-12-20","airline":"American Airlines","price":449.0,"is_nonstop":1,"duration_mins":348},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":365},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2027-01-15","airline":"American Airlines","price":273.0,"is_nonstop":1,"duration_mins":370},{"observed_date":"2026-04-10","corridor":"LAX-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":379},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-06-15","airline":"United Airlines","price":287.0,"is_nonstop":0,"duration_mins":422},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-06-15","airline":"United Airlines","price":310.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-06-15","airline":"American Airlines","price":332.0,"is_nonstop":1,"duration_mins":339},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-04","airline":"Southwest Airlines","price":255.0,"is_nonstop":0,"duration_mins":380},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-04","airline":"Southwest Airlines","price":255.0,"is_nonstop":0,"duration_mins":400},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-04","airline":"Alaska Airlines","price":255.0,"is_nonstop":0,"duration_mins":387},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-15","airline":"Delta Air Lines","price":208.0,"is_nonstop":1,"duration_mins":339},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-15","airline":"United Airlines","price":208.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-07-15","airline":"American Airlines","price":208.0,"is_nonstop":1,"duration_mins":339},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-08-01","airline":"Alaska Airlines","price":255.0,"is_nonstop":0,"duration_mins":387},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-08-01","airline":"Southwest Airlines","price":265.0,"is_nonstop":0,"duration_mins":500},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-08-01","airline":"Southwest Airlines","price":315.0,"is_nonstop":0,"duration_mins":400},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-09-01","airline":"American Airlines","price":173.0,"is_nonstop":1,"duration_mins":345},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-09-01","airline":"Delta Air Lines","price":173.0,"is_nonstop":1,"duration_mins":351},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-09-01","airline":"Alaska Airlines","price":173.0,"is_nonstop":1,"duration_mins":346},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-11-25","airline":"Delta Air Lines","price":219.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-11-25","airline":"American Airlines","price":219.0,"is_nonstop":1,"duration_mins":351},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-11-25","airline":"American Airlines","price":219.0,"is_nonstop":1,"duration_mins":347},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":479.0,"is_nonstop":0,"duration_mins":400},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-12-20","airline":"Delta Air Lines","price":482.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":578.0,"is_nonstop":0,"duration_mins":440},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2027-01-15","airline":"Delta Air Lines","price":250.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2027-01-15","airline":"Alaska Airlines","price":250.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"LAX-OGG","target_date":"2027-01-15","airline":"American Airlines","price":250.0,"is_nonstop":1,"duration_mins":354},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":299.0,"is_nonstop":0,"duration_mins":575},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-06-15","airline":"Alaska Airlines","price":400.0,"is_nonstop":0,"duration_mins":405},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-06-15","airline":"Delta Air Lines","price":402.0,"is_nonstop":1,"duration_mins":369},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-04","airline":"Southwest Airlines","price":342.0,"is_nonstop":0,"duration_mins":440},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-04","airline":"Southwest Airlines","price":342.0,"is_nonstop":0,"duration_mins":445},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-04","airline":"Southwest Airlines","price":342.0,"is_nonstop":0,"duration_mins":455},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-15","airline":"United Airlines","price":280.0,"is_nonstop":0,"duration_mins":477},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-15","airline":"Southwest Airlines","price":299.0,"is_nonstop":0,"duration_mins":595},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":315.0,"is_nonstop":0,"duration_mins":461},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-08-01","airline":"Southwest Airlines","price":348.0,"is_nonstop":0,"duration_mins":575},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-08-01","airline":"Southwest Airlines","price":352.0,"is_nonstop":0,"duration_mins":455},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":375.0,"is_nonstop":0,"duration_mins":469},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-09-01","airline":"United Airlines","price":209.0,"is_nonstop":0,"duration_mins":537},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-09-01","airline":"Southwest Airlines","price":209.0,"is_nonstop":0,"duration_mins":455},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-09-01","airline":"United Airlines","price":209.0,"is_nonstop":0,"duration_mins":470},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":355.0,"is_nonstop":0,"duration_mins":521},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-11-25","airline":"Alaska Airlines","price":358.0,"is_nonstop":0,"duration_mins":489},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-11-25","airline":"American Airlines","price":361.0,"is_nonstop":0,"duration_mins":535},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-12-20","airline":"United Airlines","price":519.0,"is_nonstop":0,"duration_mins":527},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-12-20","airline":"American Airlines","price":536.0,"is_nonstop":0,"duration_mins":529},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2026-12-20","airline":"American Airlines","price":610.0,"is_nonstop":0,"duration_mins":532},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2027-01-15","airline":"United Airlines","price":388.0,"is_nonstop":0,"duration_mins":481},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":396.0,"is_nonstop":0,"duration_mins":530},{"observed_date":"2026-04-10","corridor":"SEA-HNL","target_date":"2027-01-15","airline":"Delta Air Lines","price":400.0,"is_nonstop":1,"duration_mins":386},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-06-15","airline":"United Airlines","price":315.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-06-15","airline":"Southwest Airlines","price":347.0,"is_nonstop":0,"duration_mins":435},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-06-15","airline":"United Airlines","price":348.0,"is_nonstop":1,"duration_mins":323},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":335},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":323},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":209.0,"is_nonstop":0,"duration_mins":492},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":224.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-07-15","airline":"Alaska Airlines","price":224.0,"is_nonstop":1,"duration_mins":329},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-08-01","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-08-01","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":329},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-08-01","airline":"United Airlines","price":308.0,"is_nonstop":1,"duration_mins":340},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":325},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":330},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":343},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-11-25","airline":"United Airlines","price":243.0,"is_nonstop":1,"duration_mins":336},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-11-25","airline":"American Airlines","price":252.0,"is_nonstop":0,"duration_mins":447},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-11-25","airline":"United Airlines","price":270.0,"is_nonstop":1,"duration_mins":348},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-12-20","airline":"American Airlines","price":473.0,"is_nonstop":0,"duration_mins":453},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-12-20","airline":"Alaska Airlines","price":484.0,"is_nonstop":0,"duration_mins":454},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2026-12-20","airline":"United Airlines","price":612.0,"is_nonstop":0,"duration_mins":549},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2027-01-15","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":348},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2027-01-15","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":483},{"observed_date":"2026-04-10","corridor":"SFO-HNL","target_date":"2027-01-15","airline":"United Airlines","price":282.0,"is_nonstop":0,"duration_mins":464},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-06-15","airline":"United Airlines","price":221.0,"is_nonstop":1,"duration_mins":334},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-06-15","airline":"United Airlines","price":319.0,"is_nonstop":1,"duration_mins":337},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-06-15","airline":"Southwest Airlines","price":323.0,"is_nonstop":0,"duration_mins":515},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":330},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-04","airline":"Alaska Airlines","price":273.0,"is_nonstop":1,"duration_mins":324},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-04","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":331},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-15","airline":"Alaska Airlines","price":200.0,"is_nonstop":1,"duration_mins":324},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-15","airline":"Delta Air Lines","price":209.0,"is_nonstop":0,"duration_mins":425},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-07-15","airline":"Alaska Airlines","price":209.0,"is_nonstop":0,"duration_mins":498},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-08-01","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":337},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-08-01","airline":"United Airlines","price":273.0,"is_nonstop":1,"duration_mins":334},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-08-01","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":498},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":333},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":335},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-09-01","airline":"United Airlines","price":200.0,"is_nonstop":1,"duration_mins":335},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-11-25","airline":"United Airlines","price":243.0,"is_nonstop":1,"duration_mins":336},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-11-25","airline":"United Airlines","price":252.0,"is_nonstop":0,"duration_mins":462},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-11-25","airline":"American Airlines","price":252.0,"is_nonstop":0,"duration_mins":476},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":616.0,"is_nonstop":0,"duration_mins":476},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-12-20","airline":"American Airlines","price":670.0,"is_nonstop":0,"duration_mins":445},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2026-12-20","airline":"Alaska Airlines","price":744.0,"is_nonstop":0,"duration_mins":432},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2027-01-15","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":432},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2027-01-15","airline":"Alaska Airlines","price":282.0,"is_nonstop":0,"duration_mins":504},{"observed_date":"2026-04-10","corridor":"SFO-OGG","target_date":"2027-01-15","airline":"United Airlines","price":316.0,"is_nonstop":1,"duration_mins":345}],"oil_prices":[{"date":"2026-04-07","wti_price":114.58}]};
+
 const COLORS = ['#00d4ff','#ff6b6b','#4cff8e','#ffd93d','#c084fc','#f97316','#22d3ee','#e879f9'];
+const TAB_NAMES = ['Oil vs Airfare','By Corridor','Booking Snapshot','Airline Breakdown','Analysis & Insights'];
 
-// --- Data loading ---
-// DATA_EMBED is injected by build_dashboard.py so the page works offline / on file://
-// Falls back to fetch('latest.json') if not embedded (e.g. during development)
-async function loadData() {
-  if (typeof DATA_EMBED !== 'undefined') {
-    DATA = DATA_EMBED;
-  } else {
-    try {
-      const resp = await fetch('latest.json');
-      DATA = await resp.json();
-    } catch (e) {
-      console.error('Failed to load data:', e);
-      DATA = { flights: [], oil_prices: [], last_updated: null };
-    }
-  }
-  initControls();
-  renderAll();
+// ---- helpers ----
+function unique(arr) { return [...new Set(arr)].sort(); }
+function targetDates() { return unique(DATA.flights.map(f=>f.target_date)); }
+function corridors()   { return unique(DATA.flights.map(f=>f.corridor)); }
+function obsDates()    { return unique(DATA.flights.map(f=>f.observed_date)); }
+
+function selTarget() { return document.getElementById('targetSel').value; }
+function selCorridors() {
+  return [...document.querySelectorAll('#corrChecks input:checked')].map(i=>i.value);
 }
 
-// --- Controls ---
-function getTargetDates() {
-  return [...new Set(DATA.flights.map(f => f.target_date))].sort();
-}
-function getCorridors() {
-  return [...new Set(DATA.flights.map(f => f.corridor))].sort();
-}
-function getObsDates() {
-  return [...new Set(DATA.flights.map(f => f.observed_date))].sort();
+function cheapest(flights) {
+  const m = {};
+  flights.forEach(f => {
+    const k = f.corridor+'|'+f.target_date;
+    if (!m[k] || f.price < m[k].price) m[k] = f;
+  });
+  return Object.values(m);
 }
 
+// ---- build controls ----
 function initControls() {
-  const sel = document.getElementById('targetDateSelect');
-  sel.innerHTML = '';
-  getTargetDates().forEach(d => {
+  const sel = document.getElementById('targetSel');
+  targetDates().forEach(d => {
     const o = document.createElement('option');
     o.value = d; o.textContent = d; sel.appendChild(o);
   });
-  sel.addEventListener('change', renderAll);
+  sel.onchange = renderActive;
 
-  const checks = document.getElementById('corridorChecks');
-  checks.innerHTML = '';
-  getCorridors().forEach(c => {
+  const box = document.getElementById('corrChecks');
+  corridors().forEach(c => {
     const lbl = document.createElement('label');
-    lbl.innerHTML = `<input type="checkbox" value="${c}" checked> ${c}`;
-    lbl.querySelector('input').addEventListener('change', renderAll);
-    checks.appendChild(lbl);
+    lbl.innerHTML = '<input type="checkbox" value="'+c+'" checked> '+c;
+    lbl.querySelector('input').onchange = renderActive;
+    box.appendChild(lbl);
   });
-
-  const dates = getObsDates();
-  if (dates.length) {
-    document.getElementById('rangeStart').value = dates[0];
-    document.getElementById('rangeEnd').value = dates[dates.length - 1];
-  }
-  document.getElementById('rangeStart').addEventListener('change', renderAll);
-  document.getElementById('rangeEnd').addEventListener('change', renderAll);
 
   if (DATA.last_updated) {
-    document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date(DATA.last_updated).toLocaleString();
+    document.getElementById('updated').textContent =
+      'Updated: ' + new Date(DATA.last_updated).toLocaleString();
   }
 }
 
-function selectedTarget() { return document.getElementById('targetDateSelect').value; }
-function selectedCorridors() {
-  return [...document.querySelectorAll('#corridorChecks input:checked')].map(i => i.value);
-}
-function dateRange() {
-  return [document.getElementById('rangeStart').value, document.getElementById('rangeEnd').value];
-}
+// ---- tabs ----
+let activeTab = 0;
+function buildTabs() {
+  const bar = document.getElementById('tabBar');
+  const panes = document.getElementById('panes');
+  TAB_NAMES.forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (i===0?' active':'');
+    btn.textContent = name;
+    btn.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('pane'+i).classList.add('active');
+      activeTab = i;
+      renderActive();
+    };
+    bar.appendChild(btn);
 
-// --- Tabs ---
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById(t.dataset.tab).classList.add('active');
-    renderAll();
+    const div = document.createElement('div');
+    div.className = 'pane' + (i===0?' active':'');
+    div.id = 'pane'+i;
+    panes.appendChild(div);
   });
-});
+}
 
-document.querySelectorAll('#nonstopToggle .toggle-btn').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('#nonstopToggle .toggle-btn').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    renderTab2();
-  });
-});
+// ---- chart instances ----
+let charts = {};
+function clearChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
 
-// --- Helpers ---
-function pearson(xs, ys) {
-  const n = xs.length;
-  if (n < 3) return null;
-  const mx = xs.reduce((a,b) => a+b, 0) / n;
-  const my = ys.reduce((a,b) => a+b, 0) / n;
-  let num = 0, dx = 0, dy = 0;
-  for (let i = 0; i < n; i++) {
-    num += (xs[i] - mx) * (ys[i] - my);
-    dx += (xs[i] - mx) ** 2;
-    dy += (ys[i] - my) ** 2;
+function renderActive() {
+  const fns = [renderTab0, renderTab1, renderTab2, renderTab3, renderTab4];
+  fns[activeTab]();
+}
+
+// ======== TAB 0: Oil vs Airfare ========
+function renderTab0() {
+  const pane = document.getElementById('pane0');
+  const dates = obsDates();
+  if (dates.length < 3) {
+    pane.innerHTML =
+      '<div class="card"><h3>Building Data</h3>' +
+      '<p><span class="accent">' + dates.length + ' day(s)</span> of data collected so far. ' +
+      'Correlation chart available after <span class="accent">7+ days</span> of daily observations.</p>' +
+      '<div class="info-box">Keep running daily flight collection to build the time series. ' +
+      'Oil data updates automatically via GitHub Actions.</div></div>' +
+      '<div class="card"><h3>Data Collected So Far</h3>' +
+      '<p>Flights: <span class="accent">' + DATA.flights.length + '</span> observations across ' +
+      '<span class="accent">' + corridors().length + '</span> corridors and ' +
+      '<span class="accent">' + targetDates().length + '</span> target dates</p>' +
+      '<p>Oil: WTI at <span class="accent">$' +
+      (DATA.oil_prices.length ? DATA.oil_prices[DATA.oil_prices.length-1].wti_price.toFixed(2) : '---') +
+      '/bbl</span>' +
+      (DATA.oil_prices.length ? ' (' + DATA.oil_prices[DATA.oil_prices.length-1].date + ')' : '') +
+      '</p></div>';
+    return;
   }
-  dx = Math.sqrt(dx); dy = Math.sqrt(dy);
-  if (dx === 0 || dy === 0) return null;
-  return num / (dx * dy);
-}
-
-function rollingAvg(arr, window) {
-  const result = [];
-  for (let i = 0; i < arr.length; i++) {
-    const start = Math.max(0, i - window + 1);
-    const slice = arr.slice(start, i + 1).filter(v => v != null);
-    result.push(slice.length > 0 ? slice.reduce((a,b) => a+b, 0) / slice.length : null);
-  }
-  return result;
-}
-
-function normalize0100(arr) {
-  const vals = arr.filter(v => v != null);
-  if (vals.length === 0) return arr.map(() => null);
-  const min = Math.min(...vals), max = Math.max(...vals);
-  if (max === min) return arr.map(v => v != null ? 50 : null);
-  return arr.map(v => v != null ? ((v - min) / (max - min)) * 100 : null);
-}
-
-function getCheapestByCorridorDate(flights) {
-  const map = {};
-  flights.forEach(f => {
-    const key = `${f.corridor}|${f.observed_date}`;
-    if (!map[key] || f.price < map[key].price) map[key] = f;
-  });
-  return Object.values(map);
-}
-
-function getCorridorTimeseries(corridor, obsDates) {
-  const byDate = {};
-  DATA.flights.filter(f => f.corridor === corridor).forEach(f => {
-    if (!byDate[f.observed_date] || f.price < byDate[f.observed_date])
-      byDate[f.observed_date] = f.price;
-  });
-  return obsDates.map(d => byDate[d] ?? null);
-}
-
-// --- Rendering ---
-function renderAll() {
-  renderTab1();
-  renderTab2();
-  renderTab3();
-  renderTab4();
-  renderTab5();
-}
-
-function renderTab1() {
-  const target = selectedTarget();
-  const corridors = selectedCorridors();
-  const [start, end] = dateRange();
-
+  // With enough data, show dual-axis chart
+  const target = selTarget();
+  const corrs = selCorridors();
   const filtered = DATA.flights.filter(f =>
-    f.target_date === target &&
-    corridors.includes(f.corridor) &&
-    f.observed_date >= start && f.observed_date <= end
-  );
-
+    f.target_date === target && corrs.includes(f.corridor));
   const fareByDate = {};
   filtered.forEach(f => {
     if (!fareByDate[f.observed_date] || f.price < fareByDate[f.observed_date])
       fareByDate[f.observed_date] = f.price;
   });
-
   const oilByDate = {};
   DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+  const allDates = unique([...Object.keys(fareByDate), ...Object.keys(oilByDate)]);
 
-  const allDates = [...new Set([...Object.keys(fareByDate), ...Object.keys(oilByDate)])]
-    .filter(d => d >= start && d <= end).sort();
-
-  const fareVals = allDates.map(d => fareByDate[d] ?? null);
-  const oilVals = allDates.map(d => oilByDate[d] ?? null);
-
-  const paired = allDates.filter(d => fareByDate[d] != null && oilByDate[d] != null);
-  const r = pearson(paired.map(d => fareByDate[d]), paired.map(d => oilByDate[d]));
-  const badge = document.getElementById('corrBadge');
-  if (r !== null) {
-    const abs = Math.abs(r);
-    const strength = abs > 0.7 ? 'strong' : abs > 0.4 ? 'moderate' : 'weak';
-    const dir = r > 0 ? 'positive' : 'negative';
-    const cls = r > 0.1 ? 'positive' : r < -0.1 ? 'negative' : 'neutral';
-    badge.innerHTML = `<span class="badge ${cls}">r = ${r.toFixed(2)} (${strength} ${dir})</span>
-      <span style="color:#888;font-size:0.8em;margin-left:8px">Tracking ${paired.length} days of data</span>`;
-  } else {
-    badge.innerHTML = '<span class="badge neutral">Insufficient data for correlation</span>';
-  }
-
-  if (chart1) chart1.destroy();
-  chart1 = new Chart(document.getElementById('chart1'), {
-    type: 'line',
-    data: {
+  pane.innerHTML = '<div class="chart-box"><canvas id="c0"></canvas></div>';
+  clearChart('c0');
+  charts['c0'] = new Chart(document.getElementById('c0'), {
+    type:'line',
+    data:{
       labels: allDates,
-      datasets: [
-        {
-          label: 'Avg Cheapest Fare ($)',
-          data: fareVals,
-          borderColor: '#00d4ff',
-          backgroundColor: 'rgba(0,212,255,0.1)',
-          yAxisID: 'y',
-          tension: 0.3, pointRadius: 2, spanGaps: true,
-        },
-        {
-          label: 'WTI Crude ($/barrel)',
-          data: oilVals,
-          borderColor: '#ff6b6b',
-          backgroundColor: 'rgba(255,107,107,0.1)',
-          yAxisID: 'y1',
-          tension: 0.3, pointRadius: 2, spanGaps: true,
-        }
+      datasets:[
+        {label:'Cheapest Fare ($)',data:allDates.map(d=>fareByDate[d]??null),
+          borderColor:'#00d4ff',yAxisID:'y',tension:.3,pointRadius:2,spanGaps:true},
+        {label:'WTI Crude ($/bbl)',data:allDates.map(d=>oilByDate[d]??null),
+          borderColor:'#ff6b6b',yAxisID:'y1',tension:.3,pointRadius:2,spanGaps:true}
       ]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#ccc' } } },
-      scales: {
-        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#1a1a2e' } },
-        y: { position: 'left', title: { display: true, text: 'Fare ($)', color: '#00d4ff' },
-             ticks: { color: '#00d4ff' }, grid: { color: '#1a1a2e' } },
-        y1: { position: 'right', title: { display: true, text: 'WTI ($/bbl)', color: '#ff6b6b' },
-              ticks: { color: '#ff6b6b' }, grid: { drawOnChartArea: false } },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#ccc'}}},
+      scales:{
+        x:{ticks:{color:'#888',maxTicksLimit:15},grid:{color:'#1a1a2e'}},
+        y:{position:'left',title:{display:true,text:'Fare ($)',color:'#00d4ff'},
+            ticks:{color:'#00d4ff'},grid:{color:'#1a1a2e'}},
+        y1:{position:'right',title:{display:true,text:'WTI ($/bbl)',color:'#ff6b6b'},
+             ticks:{color:'#ff6b6b'},grid:{drawOnChartArea:false}}
       }
     }
   });
 }
 
-function renderTab2() {
-  const target = selectedTarget();
-  const corridors = selectedCorridors();
-  const [start, end] = dateRange();
-  const nonstopOnly = document.querySelector('#nonstopToggle .toggle-btn.active')?.dataset.val === 'nonstop';
+// ======== TAB 1: By Corridor ========
+function renderTab1() {
+  const pane = document.getElementById('pane1');
+  const target = selTarget();
+  const corrs = selCorridors();
+  const filtered = DATA.flights.filter(f =>
+    f.target_date === target && corrs.includes(f.corridor));
 
-  let filtered = DATA.flights.filter(f =>
-    f.target_date === target &&
-    corridors.includes(f.corridor) &&
-    f.observed_date >= start && f.observed_date <= end
-  );
-  if (nonstopOnly) filtered = filtered.filter(f => f.is_nonstop);
-
+  // Cheapest per corridor per date
   const byCorridor = {};
   filtered.forEach(f => {
     if (!byCorridor[f.corridor]) byCorridor[f.corridor] = {};
     if (!byCorridor[f.corridor][f.observed_date] || f.price < byCorridor[f.corridor][f.observed_date])
       byCorridor[f.corridor][f.observed_date] = f.price;
   });
+  const dates = unique(filtered.map(f=>f.observed_date));
+  const useBar = dates.length < 3;
+  const corrKeys = Object.keys(byCorridor).sort();
 
-  const allDates = [...new Set(filtered.map(f => f.observed_date))].sort();
-  const datasets = Object.keys(byCorridor).sort().map((c, i) => ({
-    label: c,
-    data: allDates.map(d => byCorridor[c][d] ?? null),
-    borderColor: COLORS[i % COLORS.length],
-    tension: 0.3, pointRadius: 2, spanGaps: true,
-  }));
+  pane.innerHTML = '<div class="chart-box"><canvas id="c1"></canvas></div>';
+  clearChart('c1');
 
-  if (chart2) chart2.destroy();
-  chart2 = new Chart(document.getElementById('chart2'), {
-    type: 'line',
-    data: { labels: allDates, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#ccc' } } },
-      scales: {
-        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#1a1a2e' } },
-        y: { title: { display: true, text: 'Cheapest Fare ($)', color: '#ccc' },
-             ticks: { color: '#ccc' }, grid: { color: '#1a1a2e' } },
+  if (useBar) {
+    charts['c1'] = new Chart(document.getElementById('c1'), {
+      type:'bar',
+      data:{
+        labels: corrKeys,
+        datasets: dates.map((d,i) => ({
+          label: d,
+          data: corrKeys.map(c => byCorridor[c][d] ?? null),
+          backgroundColor: COLORS[i % COLORS.length] + '99',
+          borderColor: COLORS[i % COLORS.length],
+          borderWidth: 1
+        }))
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#ccc'}},
+                  title:{display:true,text:'Cheapest fare for '+target,color:'#ccc'}},
+        scales:{
+          x:{ticks:{color:'#888'},grid:{color:'#1a1a2e'}},
+          y:{title:{display:true,text:'Price ($)',color:'#ccc'},
+              ticks:{color:'#ccc'},grid:{color:'#1a1a2e'}}
+        }
       }
-    }
-  });
+    });
+  } else {
+    charts['c1'] = new Chart(document.getElementById('c1'), {
+      type:'line',
+      data:{
+        labels: dates,
+        datasets: corrKeys.map((c,i) => ({
+          label:c,
+          data: dates.map(d => byCorridor[c][d] ?? null),
+          borderColor: COLORS[i%COLORS.length],
+          tension:.3,pointRadius:2,spanGaps:true
+        }))
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#ccc'}}},
+        scales:{
+          x:{ticks:{color:'#888',maxTicksLimit:15},grid:{color:'#1a1a2e'}},
+          y:{title:{display:true,text:'Cheapest Fare ($)',color:'#ccc'},
+              ticks:{color:'#ccc'},grid:{color:'#1a1a2e'}}
+        }
+      }
+    });
+  }
 }
 
-function renderTab3() {
-  const corridors = selectedCorridors();
-  const latestDate = getObsDates().slice(-1)[0];
-  if (!latestDate) return;
+// ======== TAB 2: Booking Snapshot ========
+function renderTab2() {
+  const pane = document.getElementById('pane2');
+  const corrs = selCorridors();
+  const latest = obsDates().slice(-1)[0];
+  if (!latest) { pane.innerHTML = '<p class="dim">No data yet.</p>'; return; }
 
-  const latest = DATA.flights.filter(f =>
-    f.observed_date === latestDate && corridors.includes(f.corridor)
-  );
+  const todayFlights = DATA.flights.filter(f => f.observed_date === latest && corrs.includes(f.corridor));
+  const targets = targetDates();
 
-  const targets = getTargetDates();
+  // Cheapest per corridor per target
   const byCorridor = {};
-  latest.forEach(f => {
+  todayFlights.forEach(f => {
     if (!byCorridor[f.corridor]) byCorridor[f.corridor] = {};
     if (!byCorridor[f.corridor][f.target_date] || f.price < byCorridor[f.corridor][f.target_date])
       byCorridor[f.corridor][f.target_date] = f.price;
   });
+  const corrKeys = Object.keys(byCorridor).sort();
 
-  const datasets = Object.keys(byCorridor).sort().map((c, i) => ({
-    label: c,
-    data: targets.map(t => byCorridor[c]?.[t] ?? null),
-    backgroundColor: COLORS[i % COLORS.length] + '99',
-    borderColor: COLORS[i % COLORS.length],
-    borderWidth: 1,
-  }));
-
-  if (chart3) chart3.destroy();
-  chart3 = new Chart(document.getElementById('chart3'), {
-    type: 'bar',
-    data: { labels: targets, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#ccc' } },
-        title: { display: true, text: `Forward Booking Snapshot (${latestDate})`, color: '#ccc' }
+  pane.innerHTML = '<div class="chart-box" style="height:500px"><canvas id="c2"></canvas></div>';
+  clearChart('c2');
+  charts['c2'] = new Chart(document.getElementById('c2'), {
+    type:'bar',
+    data:{
+      labels: targets,
+      datasets: corrKeys.map((c,i) => ({
+        label: c,
+        data: targets.map(t => byCorridor[c]?.[t] ?? null),
+        backgroundColor: COLORS[i%COLORS.length] + '99',
+        borderColor: COLORS[i%COLORS.length],
+        borderWidth: 1
+      }))
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#ccc'}},
+        title:{display:true,text:'Forward Booking Snapshot ('+latest+')',color:'#ccc'}
       },
-      scales: {
-        x: { ticks: { color: '#888' }, grid: { color: '#1a1a2e' } },
-        y: { title: { display: true, text: 'Price ($)', color: '#ccc' },
-             ticks: { color: '#ccc' }, grid: { color: '#1a1a2e' } },
+      scales:{
+        x:{ticks:{color:'#888'},grid:{color:'#1a1a2e'}},
+        y:{title:{display:true,text:'Price ($)',color:'#ccc'},
+            ticks:{color:'#ccc'},grid:{color:'#1a1a2e'}}
       }
     }
   });
 }
 
-function renderTab4() {
-  const corridors = selectedCorridors();
-  const dates = getObsDates();
-  const latestDate = dates.slice(-1)[0];
-  if (!latestDate) return;
+// ======== TAB 3: Airline Breakdown ========
+function renderTab3() {
+  const pane = document.getElementById('pane3');
+  const latest = obsDates().slice(-1)[0];
+  if (!latest) { pane.innerHTML = '<p class="dim">No data yet.</p>'; return; }
 
-  const d7 = new Date(latestDate);
-  d7.setDate(d7.getDate() - 7);
-  const d7str = d7.toISOString().slice(0, 10);
-  const prevDate = dates.filter(d => d <= d7str).slice(-1)[0];
+  const rows = DATA.flights
+    .filter(f => f.observed_date === latest)
+    .sort((a,b) => a.corridor.localeCompare(b.corridor) || a.price - b.price);
 
-  const latest = DATA.flights.filter(f =>
-    f.observed_date === latestDate && corridors.includes(f.corridor)
-  );
-  const prev = prevDate ? DATA.flights.filter(f =>
-    f.observed_date === prevDate && corridors.includes(f.corridor)
-  ) : [];
-
-  const prevLookup = {};
-  prev.forEach(f => {
-    const key = `${f.corridor}|${f.target_date}|${f.airline}`;
-    if (!prevLookup[key] || f.price < prevLookup[key]) prevLookup[key] = f.price;
-  });
-
-  const tbody = document.querySelector('#airlineTable tbody');
-  tbody.innerHTML = '';
-
-  const seen = {};
-  const rows = [];
-  latest.sort((a, b) => a.price - b.price).forEach(f => {
-    const key = `${f.corridor}|${f.target_date}|${f.airline}`;
-    if (seen[key]) return;
-    seen[key] = true;
-    const prevPrice = prevLookup[key];
-    let changeHtml = '<span class="price-flat">&mdash;</span>';
-    if (prevPrice != null) {
-      const diff = f.price - prevPrice;
-      if (diff > 0) changeHtml = `<span class="price-up">\u25b2$${diff.toFixed(0)}</span>`;
-      else if (diff < 0) changeHtml = `<span class="price-down">\u25bc$${Math.abs(diff).toFixed(0)}</span>`;
-    }
-    rows.push({ ...f, changeHtml });
-  });
-
+  let html = '<table><thead><tr>' +
+    '<th>Corridor</th><th>Target Date</th><th>Airline</th><th>Price</th><th>Nonstop</th>' +
+    '</tr></thead><tbody>';
   rows.forEach(r => {
-    const tr = document.createElement('tr');
-    const ns = r.is_nonstop ? '<span class="nonstop-yes">Yes</span>' : '<span class="nonstop-no">No</span>';
-    tr.innerHTML = `<td>${r.corridor}</td><td>${r.target_date}</td><td>${r.airline}</td>
-      <td>$${r.price.toFixed(0)}</td><td>${ns}</td><td>${r.changeHtml}</td>`;
-    tbody.appendChild(tr);
+    const ns = r.is_nonstop ? '<span class="green">Yes</span>' : '<span class="dim">No</span>';
+    html += '<tr><td>'+r.corridor+'</td><td>'+r.target_date+'</td><td>'+r.airline+
+            '</td><td>$'+r.price.toFixed(0)+'</td><td>'+ns+'</td></tr>';
   });
+  html += '</tbody></table>';
+  html += '<p class="dim" style="margin-top:8px">'+rows.length+' observations from '+latest+'</p>';
+  pane.innerHTML = html;
 
-  document.querySelectorAll('#airlineTable th').forEach(th => {
+  // Sortable headers
+  pane.querySelectorAll('th').forEach((th, idx) => {
     th.onclick = () => {
-      const col = th.dataset.col;
-      const rowEls = [...tbody.querySelectorAll('tr')];
+      const tbody = pane.querySelector('tbody');
+      const trs = [...tbody.querySelectorAll('tr')];
       const dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
       th.dataset.dir = dir;
-      rowEls.sort((a, b) => {
-        let av = a.children[['corridor','target_date','airline','price','is_nonstop','change'].indexOf(col)].textContent;
-        let bv = b.children[['corridor','target_date','airline','price','is_nonstop','change'].indexOf(col)].textContent;
-        if (col === 'price') { av = parseFloat(av.replace('$','')); bv = parseFloat(bv.replace('$','')); }
+      trs.sort((a,b) => {
+        let av = a.children[idx].textContent;
+        let bv = b.children[idx].textContent;
+        if (idx === 3) { av = parseFloat(av.replace('$','')); bv = parseFloat(bv.replace('$','')); }
         if (av < bv) return dir === 'asc' ? -1 : 1;
         if (av > bv) return dir === 'asc' ? 1 : -1;
         return 0;
       });
-      rowEls.forEach(r => tbody.appendChild(r));
+      trs.forEach(r => tbody.appendChild(r));
     };
   });
 }
 
-// --- Tab 5: Analysis & Insights ---
-function renderTab5() {
-  renderCorrelationPanel();
-  renderTakeaways();
-  renderMomentumChart();
-}
+// ======== TAB 4: Analysis & Insights ========
+function renderTab4() {
+  const pane = document.getElementById('pane4');
+  const latest = obsDates().slice(-1)[0];
+  if (!latest) { pane.innerHTML = '<p class="dim">No data yet.</p>'; return; }
 
-function renderCorrelationPanel() {
-  const corridors = getCorridors();
-  const obsDates = getObsDates();
-  const oilByDate = {};
-  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+  const todayFlights = DATA.flights.filter(f => f.observed_date === latest);
+  const ch = cheapest(todayFlights);
 
-  const tbody = document.querySelector('#corrTable tbody');
-  tbody.innerHTML = '';
-  const summaries = [];
+  // Cheapest overall
+  const cheapestAll = ch.reduce((best, f) => (!best || f.price < best.price) ? f : best, null);
 
-  corridors.forEach(corridor => {
-    // Get cheapest fare per observation date for this corridor (across all target dates)
-    const fareByDate = {};
-    DATA.flights.filter(f => f.corridor === corridor).forEach(f => {
-      if (!fareByDate[f.observed_date] || f.price < fareByDate[f.observed_date])
-        fareByDate[f.observed_date] = f.price;
-    });
+  // Most expensive
+  const mostExpensive = ch.reduce((best, f) => (!best || f.price > best.price) ? f : best, null);
 
-    // Build aligned time series
-    const commonDates = obsDates.filter(d => fareByDate[d] != null && oilByDate[d] != null);
-
-    // Same-day correlation
-    const r0 = commonDates.length >= 3
-      ? pearson(commonDates.map(d => fareByDate[d]), commonDates.map(d => oilByDate[d]))
-      : null;
-
-    // 7-day lag: compare fare[t] with oil[t-7]
-    const r7 = computeLagCorrelation(fareByDate, oilByDate, obsDates, 7);
-
-    // 14-day lag: compare fare[t] with oil[t-14]
-    const r14 = computeLagCorrelation(fareByDate, oilByDate, obsDates, 14);
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${corridor}</td>
-      <td class="${corrClass(r0)}">${fmtR(r0)}</td>
-      <td class="${corrClass(r7)}">${fmtR(r7)}</td>
-      <td class="${corrClass(r14)}">${fmtR(r14)}</td>`;
-    tbody.appendChild(tr);
-
-    // Build summary
-    const best = bestLag(r0, r7, r14);
-    if (best.r !== null) {
-      const strength = Math.abs(best.r) > 0.6 ? 'strong' : Math.abs(best.r) > 0.3 ? 'moderate' : 'weak';
-      const dir = best.r > 0 ? 'positive' : 'negative';
-      const lagText = best.lag === 0 ? 'same-day' : `~${best.lag}-day lag`;
-      summaries.push(
-        `<strong>${corridor}</strong> shows a ${strength} ${dir} correlation ` +
-        `(r=${best.r.toFixed(2)}) with oil prices` +
-        (best.lag > 0 ? `, with fares typically repricing at a ${lagText}.` : '.')
-      );
-    }
-  });
-
-  const summaryDiv = document.getElementById('corrSummary');
-  if (summaries.length > 0) {
-    summaryDiv.innerHTML = summaries.join('<br>');
-  } else {
-    summaryDiv.innerHTML = 'Insufficient data for correlation analysis. As daily observations accumulate, ' +
-      'this panel will show how airfare movements relate to oil price changes across corridors.';
-  }
-}
-
-function computeLagCorrelation(fareByDate, oilByDate, allDates, lagDays) {
-  const pairs = [];
-  allDates.forEach(d => {
-    if (fareByDate[d] == null) return;
-    const lagDate = new Date(d);
-    lagDate.setDate(lagDate.getDate() - lagDays);
-    const lagStr = lagDate.toISOString().slice(0, 10);
-    // Find nearest oil date within 2 days of lag target
-    let oilVal = oilByDate[lagStr];
-    if (oilVal == null) {
-      for (let off = 1; off <= 2; off++) {
-        const d1 = new Date(lagDate); d1.setDate(d1.getDate() - off);
-        const d2 = new Date(lagDate); d2.setDate(d2.getDate() + off);
-        if (oilByDate[d1.toISOString().slice(0, 10)] != null) { oilVal = oilByDate[d1.toISOString().slice(0, 10)]; break; }
-        if (oilByDate[d2.toISOString().slice(0, 10)] != null) { oilVal = oilByDate[d2.toISOString().slice(0, 10)]; break; }
-      }
-    }
-    if (oilVal != null) pairs.push([fareByDate[d], oilVal]);
-  });
-  if (pairs.length < 3) return null;
-  return pearson(pairs.map(p => p[0]), pairs.map(p => p[1]));
-}
-
-function corrClass(r) {
-  if (r === null) return 'corr-weak';
-  const abs = Math.abs(r);
-  if (abs > 0.6) return 'corr-strong';
-  if (abs > 0.3) return 'corr-moderate';
-  return 'corr-weak';
-}
-
-function fmtR(r) {
-  return r !== null ? r.toFixed(2) : 'n/a';
-}
-
-function bestLag(r0, r7, r14) {
-  const candidates = [
-    { r: r0, lag: 0 },
-    { r: r7, lag: 7 },
-    { r: r14, lag: 14 },
-  ].filter(c => c.r !== null);
-  if (candidates.length === 0) return { r: null, lag: 0 };
-  return candidates.reduce((best, c) => Math.abs(c.r) > Math.abs(best.r) ? c : best);
-}
-
-function renderTakeaways() {
-  const list = document.getElementById('takeawayList');
-  list.innerHTML = '';
-  const items = [];
-  const obsDates = getObsDates();
-  const latestDate = obsDates.slice(-1)[0];
-  if (!latestDate) {
-    list.innerHTML = '<li>No data available yet.</li>';
-    return;
+  // Sep 1 baseline vs Dec 20 premium
+  const sep = ch.filter(f => f.target_date === '2026-09-01');
+  const dec = ch.filter(f => f.target_date === '2026-12-20');
+  let premiumHtml = '';
+  if (sep.length && dec.length) {
+    const sepAvg = sep.reduce((s,f)=>s+f.price,0) / sep.length;
+    const decAvg = dec.reduce((s,f)=>s+f.price,0) / dec.length;
+    const pct = ((decAvg - sepAvg) / sepAvg * 100).toFixed(0);
+    premiumHtml = '<li>Holiday premium: Dec 20 averages <span class="accent">$' +
+      decAvg.toFixed(0) + '</span> vs Sep 1 baseline <span class="accent">$' +
+      sepAvg.toFixed(0) + '</span> &mdash; <span class="red">+' + pct + '% markup</span></li>';
   }
 
-  const corridors = getCorridors();
-  const oilByDate = {};
-  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
+  // Oil price
+  const oilLatest = DATA.oil_prices.length
+    ? DATA.oil_prices[DATA.oil_prices.length - 1] : null;
 
-  // Find 7 days ago
-  const d7 = new Date(latestDate);
-  d7.setDate(d7.getDate() - 7);
-  const d7str = d7.toISOString().slice(0, 10);
-  const prevDate = obsDates.filter(d => d <= d7str).slice(-1)[0];
+  let html = '<div class="card"><h3>Key Findings ('+latest+')</h3><ul>';
 
-  // 1. Which corridor moved most in last 7 days
-  if (prevDate) {
-    let biggestMove = null;
-    corridors.forEach(c => {
-      const latestPrice = cheapestForCorridor(c, latestDate);
-      const prevPrice = cheapestForCorridor(c, prevDate);
-      if (latestPrice != null && prevPrice != null) {
-        const change = latestPrice - prevPrice;
-        const pct = (change / prevPrice) * 100;
-        if (!biggestMove || Math.abs(pct) > Math.abs(biggestMove.pct))
-          biggestMove = { corridor: c, change, pct, latest: latestPrice, prev: prevPrice };
-      }
-    });
-    if (biggestMove) {
-      const arrow = biggestMove.change > 0 ? '\u25b2' : '\u25bc';
-      const cls = biggestMove.change > 0 ? 'price-up' : 'price-down';
-      items.push(`<span class="takeaway-label label-trend">TREND</span> ` +
-        `<strong>${biggestMove.corridor}</strong> moved the most in the past 7 days: ` +
-        `<span class="${cls}">${arrow}$${Math.abs(biggestMove.change).toFixed(0)} (${biggestMove.pct > 0 ? '+' : ''}${biggestMove.pct.toFixed(1)}%)</span>`);
-    }
+  if (cheapestAll) {
+    html += '<li>Cheapest route today: <span class="accent">' + cheapestAll.corridor +
+            '</span> on ' + cheapestAll.target_date +
+            ' &mdash; <span class="green">$' + cheapestAll.price.toFixed(0) + '</span>' +
+            ' (' + cheapestAll.airline + (cheapestAll.is_nonstop ? ', nonstop' : '') + ')</li>';
+  }
+  if (mostExpensive) {
+    html += '<li>Most expensive: <span class="accent">' + mostExpensive.corridor +
+            '</span> on ' + mostExpensive.target_date +
+            ' &mdash; <span class="red">$' + mostExpensive.price.toFixed(0) + '</span>' +
+            ' (' + mostExpensive.airline + ')</li>';
+  }
+  html += premiumHtml;
+
+  if (oilLatest) {
+    html += '<li>WTI crude oil: <span class="accent">$' + oilLatest.wti_price.toFixed(2) +
+            '/bbl</span> (' + oilLatest.date + ')</li>';
   }
 
-  // 2. Which target date has highest volatility
-  const targetVol = {};
-  getTargetDates().forEach(target => {
-    const prices = [];
-    obsDates.forEach(d => {
-      const cheapest = cheapestForTarget(target, d);
-      if (cheapest != null) prices.push(cheapest);
-    });
-    if (prices.length >= 2) {
-      const mean = prices.reduce((a,b) => a+b, 0) / prices.length;
-      const variance = prices.reduce((a, p) => a + (p - mean) ** 2, 0) / prices.length;
-      targetVol[target] = { std: Math.sqrt(variance), spread: Math.max(...prices) - Math.min(...prices), mean };
-    }
+  html += '</ul></div>';
+
+  // Corridor summary
+  html += '<div class="card"><h3>Cheapest Fare by Corridor</h3><table>' +
+    '<thead><tr><th>Corridor</th><th>Best Target Date</th><th>Price</th><th>Airline</th></tr></thead><tbody>';
+  const byCorr = {};
+  ch.forEach(f => {
+    if (!byCorr[f.corridor] || f.price < byCorr[f.corridor].price)
+      byCorr[f.corridor] = f;
   });
-  const mostVolatile = Object.entries(targetVol).sort((a, b) => b[1].std - a[1].std)[0];
-  if (mostVolatile) {
-    items.push(`<span class="takeaway-label label-vol">VOLATILITY</span> ` +
-      `<strong>${mostVolatile[0]}</strong> has the highest price volatility ` +
-      `(std dev: $${mostVolatile[1].std.toFixed(0)}, spread: $${mostVolatile[1].spread.toFixed(0)})`);
-  }
-
-  // 3. Oil trend vs airfare
-  const latestOil = DATA.oil_prices.slice(-1)[0];
-  if (latestOil && DATA.oil_prices.length >= 2) {
-    const oilDates = DATA.oil_prices.map(o => o.date).sort();
-    const d7oil = new Date(oilDates.slice(-1)[0]);
-    d7oil.setDate(d7oil.getDate() - 7);
-    const prevOil = DATA.oil_prices.filter(o => o.date <= d7oil.toISOString().slice(0, 10)).slice(-1)[0];
-    if (prevOil) {
-      const oilChange = latestOil.wti_price - prevOil.wti_price;
-      const oilDir = oilChange > 0 ? 'up' : 'down';
-      const oilArrow = oilChange > 0 ? '\u25b2' : '\u25bc';
-
-      // Check if avg airfare followed
-      const latestAvgFare = avgCheapestAcrossCorridors(latestDate);
-      const prevAvgFare = prevDate ? avgCheapestAcrossCorridors(prevDate) : null;
-      let fareFollowed = '';
-      if (prevAvgFare != null && latestAvgFare != null) {
-        const fareChange = latestAvgFare - prevAvgFare;
-        const sameDir = (oilChange > 0 && fareChange > 0) || (oilChange < 0 && fareChange < 0);
-        fareFollowed = sameDir
-          ? ' Airfares moved in the same direction.'
-          : ' Airfares moved in the opposite direction.';
-      }
-      items.push(`<span class="takeaway-label label-trend">OIL</span> ` +
-        `WTI crude is <strong>${oilDir}</strong> ${oilArrow}$${Math.abs(oilChange).toFixed(2)} vs 7 days ago ` +
-        `(now $${latestOil.wti_price.toFixed(2)}/bbl).${fareFollowed}`);
-    } else {
-      items.push(`<span class="takeaway-label label-trend">OIL</span> ` +
-        `WTI crude at <strong>$${latestOil.wti_price.toFixed(2)}/bbl</strong> (${latestOil.date}). Tracking started recently.`);
-    }
-  }
-
-  // 4. Cheapest corridor right now vs 30-day avg
-  let cheapestCorr = null;
-  corridors.forEach(c => {
-    const price = cheapestForCorridor(c, latestDate);
-    if (price != null && (!cheapestCorr || price < cheapestCorr.price))
-      cheapestCorr = { corridor: c, price };
+  Object.keys(byCorr).sort().forEach(c => {
+    const f = byCorr[c];
+    html += '<tr><td>'+c+'</td><td>'+f.target_date+'</td><td class="green">$'+
+            f.price.toFixed(0)+'</td><td>'+f.airline+'</td></tr>';
   });
-  if (cheapestCorr) {
-    // 30-day avg
-    const d30 = new Date(latestDate);
-    d30.setDate(d30.getDate() - 30);
-    const prices30 = [];
-    obsDates.filter(d => d >= d30.toISOString().slice(0, 10)).forEach(d => {
-      const p = cheapestForCorridor(cheapestCorr.corridor, d);
-      if (p != null) prices30.push(p);
-    });
-    let vsAvg = '';
-    if (prices30.length >= 2) {
-      const avg30 = prices30.reduce((a,b) => a+b, 0) / prices30.length;
-      const diff = cheapestCorr.price - avg30;
-      const pct = (diff / avg30) * 100;
-      vsAvg = diff > 0
-        ? `, ${pct.toFixed(1)}% above its 30-day avg`
-        : `, ${Math.abs(pct).toFixed(1)}% below its 30-day avg`;
-    }
-    items.push(`<span class="takeaway-label label-value">VALUE</span> ` +
-      `Cheapest corridor today: <strong>${cheapestCorr.corridor}</strong> at $${cheapestCorr.price.toFixed(0)}${vsAvg}`);
-  }
+  html += '</tbody></table></div>';
 
-  // 5. Booking signals — target dates >15% above observed average
-  const signals = [];
-  getTargetDates().forEach(target => {
-    corridors.forEach(corridor => {
-      const currentPrice = cheapestForCorridorTarget(corridor, target, latestDate);
-      if (currentPrice == null) return;
-      const allPrices = [];
-      obsDates.forEach(d => {
-        const p = cheapestForCorridorTarget(corridor, target, d);
-        if (p != null) allPrices.push(p);
-      });
-      if (allPrices.length < 2) return;
-      const avg = allPrices.reduce((a,b) => a+b, 0) / allPrices.length;
-      const pctAbove = ((currentPrice - avg) / avg) * 100;
-      if (pctAbove > 15) {
-        signals.push({ corridor, target, currentPrice, avg, pctAbove });
-      }
-    });
-  });
-  if (signals.length > 0) {
-    signals.sort((a, b) => b.pctAbove - a.pctAbove);
-    const top = signals.slice(0, 3);
-    const signalText = top.map(s =>
-      `${s.corridor} on ${s.target} ($${s.currentPrice.toFixed(0)}, +${s.pctAbove.toFixed(0)}% vs avg)`
-    ).join('; ');
-    items.push(`<span class="takeaway-label label-signal">SIGNAL</span> ` +
-      `Elevated fares (>15% above avg) — consider impact on demand: <strong>${signalText}</strong>`);
-  }
+  // Correlation note
+  const nDays = obsDates().length;
+  html += '<div class="info-box">Correlation analysis begins after 7 days of data. ' +
+    'Currently tracking <span class="accent">' + nDays + ' day(s)</span>. ' +
+    'Oil and airfare trends will be compared once enough daily observations exist.</div>';
 
-  if (items.length === 0) {
-    items.push('Accumulating data. Takeaways will auto-generate as daily observations grow.');
-  }
-
-  list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
+  pane.innerHTML = html;
 }
 
-function cheapestForCorridor(corridor, obsDate) {
-  let min = null;
-  DATA.flights.filter(f => f.corridor === corridor && f.observed_date === obsDate).forEach(f => {
-    if (min === null || f.price < min) min = f.price;
-  });
-  return min;
-}
-
-function cheapestForTarget(target, obsDate) {
-  let min = null;
-  DATA.flights.filter(f => f.target_date === target && f.observed_date === obsDate).forEach(f => {
-    if (min === null || f.price < min) min = f.price;
-  });
-  return min;
-}
-
-function cheapestForCorridorTarget(corridor, target, obsDate) {
-  let min = null;
-  DATA.flights.filter(f => f.corridor === corridor && f.target_date === target && f.observed_date === obsDate).forEach(f => {
-    if (min === null || f.price < min) min = f.price;
-  });
-  return min;
-}
-
-function avgCheapestAcrossCorridors(obsDate) {
-  const corridors = getCorridors();
-  const prices = corridors.map(c => cheapestForCorridor(c, obsDate)).filter(p => p != null);
-  if (prices.length === 0) return null;
-  return prices.reduce((a,b) => a+b, 0) / prices.length;
-}
-
-function renderMomentumChart() {
-  const corridors = selectedCorridors();
-  const obsDates = getObsDates();
-  const oilByDate = {};
-  DATA.oil_prices.forEach(o => { oilByDate[o.date] = o.wti_price; });
-
-  // Union of obs dates and oil dates for the x-axis
-  const allDates = [...new Set([...obsDates, ...DATA.oil_prices.map(o => o.date)])].sort();
-
-  const datasets = [];
-
-  // Oil 7-day rolling avg, normalized
-  const oilRaw = allDates.map(d => oilByDate[d] ?? null);
-  const oilRolling = rollingAvg(oilRaw, 7);
-  const oilNorm = normalize0100(oilRolling);
-  datasets.push({
-    label: 'WTI Oil (7d avg)',
-    data: oilNorm,
-    borderColor: '#ff6b6b',
-    borderWidth: 3,
-    borderDash: [6, 3],
-    tension: 0.3, pointRadius: 0, spanGaps: true,
-  });
-
-  // Each corridor 7-day rolling avg, normalized
-  corridors.forEach((c, i) => {
-    const fareByDate = {};
-    DATA.flights.filter(f => f.corridor === c).forEach(f => {
-      if (!fareByDate[f.observed_date] || f.price < fareByDate[f.observed_date])
-        fareByDate[f.observed_date] = f.price;
-    });
-    const fareRaw = allDates.map(d => fareByDate[d] ?? null);
-    const fareRolling = rollingAvg(fareRaw, 7);
-    const fareNorm = normalize0100(fareRolling);
-    datasets.push({
-      label: c,
-      data: fareNorm,
-      borderColor: COLORS[i % COLORS.length],
-      borderWidth: 2,
-      tension: 0.3, pointRadius: 1, spanGaps: true,
-    });
-  });
-
-  if (chart5) chart5.destroy();
-  chart5 = new Chart(document.getElementById('chart5'), {
-    type: 'line',
-    data: { labels: allDates, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#ccc' } },
-        tooltip: {
-          callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1) ?? 'n/a'} (normalized)`
-          }
-        }
-      },
-      scales: {
-        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#1a1a2e' } },
-        y: {
-          min: 0, max: 100,
-          title: { display: true, text: 'Normalized (0 = min, 100 = max)', color: '#ccc' },
-          ticks: { color: '#ccc' }, grid: { color: '#1a1a2e' }
-        },
-      }
-    }
-  });
-}
-
-loadData();
+// ---- init ----
+document.addEventListener('DOMContentLoaded', function() {
+  initControls();
+  buildTabs();
+  renderActive();
+});
 </script>
 </body>
 </html>
