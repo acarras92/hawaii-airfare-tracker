@@ -158,26 +158,14 @@ def load_flights_from_file(filepath):
         return json.load(f)
 
 
-def fetch_oil_price(api_key):
-    resp = requests.get("https://api.eia.gov/v2/petroleum/pri/spt/data/", params={
-        "api_key": api_key,
-        "frequency": "daily",
-        "data[0]": "value",
-        "facets[series][]": "RWTC",
-        "sort[0][column]": "period",
-        "sort[0][direction]": "desc",
-        "length": "5",
-    })
-    resp.raise_for_status()
-    data = resp.json()
-
-    records = data.get("response", {}).get("data", [])
-    if not records:
-        print("  Warning: No oil price data returned from EIA")
+def fetch_oil_price():
+    import yfinance as yf
+    ticker = yf.Ticker("CL=F")
+    hist = ticker.history(period="5d")["Close"].dropna()
+    if hist.empty:
+        print("  Warning: No oil price data returned from yfinance")
         return None, None
-
-    latest = records[0]
-    return latest["period"], float(latest["value"])
+    return hist.index[-1].strftime("%Y-%m-%d"), float(hist.iloc[-1])
 
 
 def store_oil(conn, oil_date, wti_price):
@@ -257,14 +245,10 @@ def main():
     # Collect oil data
     if not args.skip_oil:
         print("Collecting oil price data...")
-        eia_key = os.environ.get("EIA_API_KEY")
-        if not eia_key:
-            print("  Warning: EIA_API_KEY not set, skipping oil data")
-        else:
-            oil_date, wti_price = fetch_oil_price(eia_key)
-            if oil_date:
-                store_oil(conn, oil_date, wti_price)
-                print(f"  WTI = ${wti_price:.2f} ({oil_date})")
+        oil_date, wti_price = fetch_oil_price()
+        if oil_date:
+            store_oil(conn, oil_date, wti_price)
+            print(f"  WTI = ${wti_price:.2f} ({oil_date})")
 
     # Export JSON
     print("Exporting data...")

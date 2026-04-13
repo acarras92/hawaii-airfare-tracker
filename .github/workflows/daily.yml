@@ -27,13 +27,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install requests
+      - run: pip install -r requirements.txt
 
       # Daily: always collect oil prices and rebuild dashboard
       - name: Collect oil prices
         run: python collect_data.py --oil-only
-        env:
-          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
 
       # Optional: full flight collection via SerpAPI (manual trigger only)
       - name: Collect flights (SerpAPI)
@@ -41,7 +39,6 @@ jobs:
         run: python collect_data.py --source serpapi --skip-oil
         env:
           SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
-          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
 
       - name: Build dashboard
         run: python build_dashboard.py
