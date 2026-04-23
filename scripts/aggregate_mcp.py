@@ -37,7 +37,7 @@ AIRPORT_TO_IATA = {
 
 REPO = Path(__file__).resolve().parent.parent
 RAW_DIR = REPO / "data" / "mcp_raw"
-TOOL_RESULTS = Path(r"C:\Users\acarr\.claude\projects\C--Users-acarr-OneDrive-Documents-Claude-Projects-hawaii-airfare-tracker\602092df-abdd-4523-b3ba-2930c9335411\tool-results")
+TOOL_RESULTS_ROOT = Path(r"C:\Users\acarr\.claude\projects\C--Users-acarr-OneDrive-Documents-Claude-Projects-hawaii-airfare-tracker")
 OUT = REPO / "data" / "mcp_flights.json"
 
 
@@ -108,8 +108,13 @@ def collect_sources():
                     seen.add(key)
                     yield corridor, target, data
 
-    # 2. All tool-results files — identify by airport codes and date
-    for path in TOOL_RESULTS.glob("*.txt"):
+    # 2. All tool-results files across ALL session dirs, newest first — identify by airport codes and date
+    tool_result_paths = []
+    for session_dir in TOOL_RESULTS_ROOT.glob("*/tool-results"):
+        for p in session_dir.glob("*.txt"):
+            tool_result_paths.append(p)
+    tool_result_paths.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    for path in tool_result_paths:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
