@@ -16,95 +16,93 @@ OUT = REPO / "data" / "mcp_flights.json"
 MANUAL = [
     # HND-HNL
     ("HND-HNL", "2026-06-15", [
-        {"airline": "Delta Air Lines", "price": 349, "is_nonstop": 1, "duration_mins": 460},
-        {"airline": "Alaska Airlines", "price": 456, "is_nonstop": 1, "duration_mins": 475},
-        {"airline": "Korean Air", "price": 513, "is_nonstop": 0, "duration_mins": 525},
+        {"airline": "Delta Air Lines", "price": 462, "is_nonstop": 1, "duration_mins": 460},
+        {"airline": "Korean Air", "price": 600, "is_nonstop": 0, "duration_mins": 525},
+        {"airline": "Korean Air", "price": 615, "is_nonstop": 0, "duration_mins": 510},
     ]),
     ("HND-HNL", "2026-07-04", [
-        {"airline": "Asiana Airlines", "price": 516, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Korean Air", "price": 522, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 526, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 604, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 609, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 615, "is_nonstop": 0, "duration_mins": 530},
     ]),
-    # HND-HNL 2026-07-15: search returned no flights today; skipped
+    ("HND-HNL", "2026-07-15", [
+        {"airline": "Korean Air", "price": 619, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 628, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 628, "is_nonstop": 0, "duration_mins": 555},
+    ]),
     ("HND-HNL", "2026-08-01", [
-        {"airline": "Asiana Airlines", "price": 599, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 608, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 608, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 710, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 710, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Asiana Airlines", "price": 717, "is_nonstop": 0, "duration_mins": 555},
     ]),
     ("HND-HNL", "2026-09-01", [
-        {"airline": "Delta Air Lines", "price": 349, "is_nonstop": 1, "duration_mins": 470},
-        {"airline": "Korean Air", "price": 358, "is_nonstop": 0, "duration_mins": 530},
-        {"airline": "Korean Air", "price": 367, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 471, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 480, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Delta Air Lines", "price": 548, "is_nonstop": 1, "duration_mins": 470},
     ]),
     ("HND-HNL", "2026-11-25", [
-        {"airline": "Alaska Airlines", "price": 349, "is_nonstop": 1, "duration_mins": 435},
-        {"airline": "Alaska Airlines", "price": 349, "is_nonstop": 1, "duration_mins": 435},
-        {"airline": "Delta Air Lines", "price": 349, "is_nonstop": 1, "duration_mins": 445},
+        {"airline": "Delta Air Lines", "price": 462, "is_nonstop": 1, "duration_mins": 445},
+        {"airline": "Korean Air", "price": 471, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 480, "is_nonstop": 0, "duration_mins": 490},
     ]),
     ("HND-HNL", "2026-12-20", [
-        {"airline": "Delta Air Lines", "price": 350, "is_nonstop": 1, "duration_mins": 420},
-        {"airline": "Japan Airlines", "price": 407, "is_nonstop": 0, "duration_mins": 455},
-        {"airline": "Japan Airlines", "price": 407, "is_nonstop": 0, "duration_mins": 455},
+        {"airline": "Delta Air Lines", "price": 596, "is_nonstop": 1, "duration_mins": 420},
+        {"airline": "Korean Air", "price": 618, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Alaska Airlines", "price": 640, "is_nonstop": 1, "duration_mins": 435},
     ]),
     ("HND-HNL", "2027-01-15", [
-        {"airline": "Delta Air Lines", "price": 434, "is_nonstop": 1, "duration_mins": 410},
-        {"airline": "Korean Air", "price": 513, "is_nonstop": 0, "duration_mins": 490},
-        {"airline": "Asiana Airlines", "price": 516, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Delta Air Lines", "price": 548, "is_nonstop": 1, "duration_mins": 410},
+        {"airline": "Korean Air", "price": 585, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 600, "is_nonstop": 0, "duration_mins": 490},
     ]),
 
     # KIX-HNL
     ("KIX-HNL", "2026-06-15", [
-        {"airline": "Japan Airlines", "price": 511, "is_nonstop": 0, "duration_mins": 475},
-        {"airline": "Korean Air", "price": 511, "is_nonstop": 0, "duration_mins": 525},
-        {"airline": "Korean Air", "price": 511, "is_nonstop": 0, "duration_mins": 525},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 510},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 510},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 510},
     ]),
     ("KIX-HNL", "2026-07-04", [
-        {"airline": "Asiana Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 530},
     ]),
     ("KIX-HNL", "2026-07-15", [
-        {"airline": "Asiana Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 555},
-        {"airline": "Asiana Airlines", "price": 529, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 617, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 617, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 617, "is_nonstop": 0, "duration_mins": 530},
     ]),
-    # KIX-HNL 2026-08-01: search returned no flights today; skipped
+    ("KIX-HNL", "2026-08-01", [
+        {"airline": "Korean Air", "price": 638, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Korean Air", "price": 668, "is_nonstop": 0, "duration_mins": 555},
+        {"airline": "Asiana Airlines", "price": 701, "is_nonstop": 0, "duration_mins": 555},
+    ]),
     ("KIX-HNL", "2026-09-01", [
-        {"airline": "Korean Air", "price": 361, "is_nonstop": 0, "duration_mins": 530},
-        {"airline": "Korean Air", "price": 361, "is_nonstop": 0, "duration_mins": 530},
-        {"airline": "Korean Air", "price": 361, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 530},
     ]),
     ("KIX-HNL", "2026-11-25", [
-        {"airline": "Korean Air", "price": 361, "is_nonstop": 0, "duration_mins": 490},
-        {"airline": "Korean Air", "price": 361, "is_nonstop": 0, "duration_mins": 490},
-        {"airline": "Korean Air", "price": 370, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 474, "is_nonstop": 0, "duration_mins": 490},
     ]),
     ("KIX-HNL", "2026-12-20", [
-        {"airline": "Japan Airlines", "price": 404, "is_nonstop": 0, "duration_mins": 435},
-        {"airline": "Japan Airlines", "price": 404, "is_nonstop": 0, "duration_mins": 435},
-        {"airline": "Japan Airlines", "price": 489, "is_nonstop": 0, "duration_mins": 435},
+        {"airline": "Alaska Airlines", "price": 623, "is_nonstop": 1, "duration_mins": 455},
+        {"airline": "Korean Air", "price": 627, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 641, "is_nonstop": 0, "duration_mins": 490},
     ]),
     ("KIX-HNL", "2027-01-15", [
-        {"airline": "Korean Air", "price": 516, "is_nonstop": 0, "duration_mins": 490},
-        {"airline": "Korean Air", "price": 516, "is_nonstop": 0, "duration_mins": 490},
-        {"airline": "Korean Air", "price": 516, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 572, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 572, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 588, "is_nonstop": 0, "duration_mins": 490},
     ]),
 
-    # ICN-HNL (3 missing; earlier dates aggregated from tool-results files)
+    # ICN-HNL (only 07-04 missing today; other dates aggregated from tool-results files)
     ("ICN-HNL", "2026-07-04", [
-        {"airline": "Korean Air", "price": 719, "is_nonstop": 0, "duration_mins": 475},
-        {"airline": "Asiana Airlines", "price": 769, "is_nonstop": 1, "duration_mins": 555},
-        {"airline": "Korean Air", "price": 881, "is_nonstop": 0, "duration_mins": 475},
-    ]),
-    ("ICN-HNL", "2026-12-20", [
-        {"airline": "Korean Air", "price": 565, "is_nonstop": 0, "duration_mins": 455},
-        {"airline": "Korean Air", "price": 577, "is_nonstop": 0, "duration_mins": 435},
-        {"airline": "Korean Air", "price": 577, "is_nonstop": 0, "duration_mins": 435},
-    ]),
-    ("ICN-HNL", "2027-01-15", [
-        {"airline": "Perimeter Aviation", "price": 558, "is_nonstop": 1, "duration_mins": 500},
-        {"airline": "Korean Air", "price": 624, "is_nonstop": 0, "duration_mins": 435},
-        {"airline": "Korean Air", "price": 624, "is_nonstop": 0, "duration_mins": 435},
+        {"airline": "Korean Air", "price": 727, "is_nonstop": 0, "duration_mins": 475},
+        {"airline": "Korean Air", "price": 727, "is_nonstop": 0, "duration_mins": 475},
+        {"airline": "Korean Air", "price": 890, "is_nonstop": 0, "duration_mins": 475},
     ]),
 ]
 
