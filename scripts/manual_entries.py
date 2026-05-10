@@ -24,7 +24,7 @@ MANUAL = [
     ("HND-HNL", "2026-07-04", [
         {"airline": "Delta Air Lines", "price": 461, "is_nonstop": 1, "duration_mins": 473},
         {"airline": "Alaska Airlines", "price": 593, "is_nonstop": 1, "duration_mins": 475},
-        {"airline": "Alaska Airlines", "price": 736, "is_nonstop": 1, "duration_mins": 475},
+        {"airline": "Alaska Airlines", "price": 737, "is_nonstop": 1, "duration_mins": 475},
     ]),
     ("HND-HNL", "2026-07-15", [
         {"airline": "Delta Air Lines", "price": 460, "is_nonstop": 1, "duration_mins": 473},
@@ -32,9 +32,9 @@ MANUAL = [
         {"airline": "Alaska Airlines", "price": 699, "is_nonstop": 1, "duration_mins": 475},
     ]),
     ("HND-HNL", "2026-08-01", [
-        {"airline": "Delta Air Lines", "price": 779, "is_nonstop": 1, "duration_mins": 474},
+        {"airline": "Delta Air Lines", "price": 780, "is_nonstop": 1, "duration_mins": 474},
         {"airline": "Philippine Airlines", "price": 885, "is_nonstop": 0, "duration_mins": 635},
-        {"airline": "Korean Air", "price": 925, "is_nonstop": 0, "duration_mins": 530},
+        {"airline": "Korean Air", "price": 926, "is_nonstop": 0, "duration_mins": 530},
     ]),
     ("HND-HNL", "2026-09-01", [
         {"airline": "Alaska Airlines", "price": 459, "is_nonstop": 1, "duration_mins": 475},
@@ -47,14 +47,14 @@ MANUAL = [
         {"airline": "Delta Air Lines", "price": 460, "is_nonstop": 1, "duration_mins": 445},
     ]),
     ("HND-HNL", "2026-12-20", [
+        {"airline": "Alaska Airlines", "price": 459, "is_nonstop": 1, "duration_mins": 435},
         {"airline": "Delta Air Lines", "price": 461, "is_nonstop": 1, "duration_mins": 420},
-        {"airline": "Japan Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 455},
         {"airline": "Japan Airlines", "price": 519, "is_nonstop": 0, "duration_mins": 455},
     ]),
     ("HND-HNL", "2027-01-15", [
         {"airline": "Delta Air Lines", "price": 460, "is_nonstop": 1, "duration_mins": 410},
         {"airline": "Korean Air", "price": 597, "is_nonstop": 0, "duration_mins": 490},
-        {"airline": "Korean Air", "price": 602, "is_nonstop": 0, "duration_mins": 490},
+        {"airline": "Korean Air", "price": 603, "is_nonstop": 0, "duration_mins": 490},
     ]),
 
     # KIX-HNL
@@ -91,7 +91,7 @@ MANUAL = [
     ("KIX-HNL", "2026-12-20", [
         {"airline": "Japan Airlines", "price": 516, "is_nonstop": 0, "duration_mins": 435},
         {"airline": "Japan Airlines", "price": 516, "is_nonstop": 0, "duration_mins": 435},
-        {"airline": "Japan Airlines", "price": 602, "is_nonstop": 0, "duration_mins": 435},
+        {"airline": "Japan Airlines", "price": 516, "is_nonstop": 0, "duration_mins": 435},
     ]),
     ("KIX-HNL", "2027-01-15", [
         {"airline": "Korean Air", "price": 600, "is_nonstop": 0, "duration_mins": 490},
