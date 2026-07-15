@@ -41,7 +41,10 @@ def main():
     oil = data.get("oil_prices", [])
 
     corridors = ["-".join(c) for c in CORRIDORS]
-    live_dates = [d for d in TARGET_DATES if d >= today]
+    # collect_data.py skips target_date <= today (line 83), so a date equal to
+    # today is never stored. Match that exactly (strictly future) or the gate
+    # spuriously FAILs on any day that is itself a TARGET_DATE.
+    live_dates = [d for d in TARGET_DATES if d > today]
     expected_combos = len(corridors) * len(live_dates)
 
     todays = [f for f in flights if f.get("observed_date") == today]
