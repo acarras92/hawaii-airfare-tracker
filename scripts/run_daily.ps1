@@ -39,7 +39,23 @@ Set-Location $Project
 "=== run_daily.ps1 start $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ===" | Out-File -FilePath $LogFile -Append -Encoding utf8
 
 & cmd /c "`"$Claude`" -p `"$Prompt`" --strict-mcp-config --mcp-config `"$McpConfig`" --dangerously-skip-permissions < NUL" *>> $LogFile
-$code = $LASTEXITCODE
+$agentCode = $LASTEXITCODE
 
-"=== run_daily.ps1 end   $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') exit=$code ===" | Out-File -FilePath $LogFile -Append -Encoding utf8
-exit $code
+# Claude's own exit code is NOT a reliable signal: on 2026-07-24 it exited 0 having
+# collected 2 of 50 combos, because it left the batch running in the background and
+# the session ended when this process returned. Re-verify the data independently and
+# report THAT as the task's result, so Task Scheduler's LastTaskResult tells the truth.
+#   0 = full collection   2 = oil-only (flight-search outage)   1 = failed
+$verifyOut  = & cmd /c "py `"$Project\scripts\verify_collection.py`" 2>&1"
+$verifyCode = $LASTEXITCODE
+$verifyOut | Out-File -FilePath $LogFile -Append -Encoding utf8
+
+$verdict = switch ($verifyCode) {
+    0       { 'PASS (flights + oil)' }
+    2       { 'OIL-ONLY (no flights stored today)' }
+    default { 'FAIL (verify gate rejected today''s data)' }
+}
+"=== verify: exit=$verifyCode $verdict (agent exit=$agentCode) ===" | Out-File -FilePath $LogFile -Append -Encoding utf8
+
+"=== run_daily.ps1 end   $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') exit=$verifyCode ===" | Out-File -FilePath $LogFile -Append -Encoding utf8
+exit $verifyCode
