@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-08-11T12:36:21.806334+00:00",
+  "last_updated": "2026-08-12T11:05:01.614779+00:00",
   "flights": [
     {
       "observed_date": "2026-04-10",
@@ -152739,6 +152739,1086 @@
       "price": 264.0,
       "is_nonstop": 0,
       "duration_mins": 603
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Philippine Airlines",
+      "price": 540.0,
+      "is_nonstop": 0,
+      "duration_mins": 635
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Delta Air Lines",
+      "price": 595.0,
+      "is_nonstop": 1,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 604.0,
+      "is_nonstop": 0,
+      "duration_mins": 530
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Delta Air Lines",
+      "price": 489.0,
+      "is_nonstop": 1,
+      "duration_mins": 440
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 490
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 502.0,
+      "is_nonstop": 1,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Delta Air Lines",
+      "price": 489.0,
+      "is_nonstop": 1,
+      "duration_mins": 423
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 502.0,
+      "is_nonstop": 1,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 502.0,
+      "is_nonstop": 1,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Delta Air Lines",
+      "price": 489.0,
+      "is_nonstop": 1,
+      "duration_mins": 406
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "HND-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Asiana Airlines",
+      "price": 536.0,
+      "is_nonstop": 0,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 460.0,
+      "is_nonstop": 0,
+      "duration_mins": 500
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 577.0,
+      "is_nonstop": 0,
+      "duration_mins": 500
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 590.0,
+      "is_nonstop": 0,
+      "duration_mins": 475
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Perimeter Aviation",
+      "price": 429.0,
+      "is_nonstop": 1,
+      "duration_mins": 500
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 590.0,
+      "is_nonstop": 0,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Philippine Airlines",
+      "price": 591.0,
+      "is_nonstop": 0,
+      "duration_mins": 610
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Philippine Airlines",
+      "price": 358.0,
+      "is_nonstop": 0,
+      "duration_mins": 610
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Perimeter Aviation",
+      "price": 429.0,
+      "is_nonstop": 1,
+      "duration_mins": 500
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Korean Air",
+      "price": 604.0,
+      "is_nonstop": 0,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Perimeter Aviation",
+      "price": 548.0,
+      "is_nonstop": 1,
+      "duration_mins": 500
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 566.0,
+      "is_nonstop": 0,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "ICN-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 653.0,
+      "is_nonstop": 0,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 462.0,
+      "is_nonstop": 0,
+      "duration_mins": 1151
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 494.0,
+      "is_nonstop": 0,
+      "duration_mins": 537
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 494.0,
+      "is_nonstop": 0,
+      "duration_mins": 567
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 369.0,
+      "is_nonstop": 1,
+      "duration_mins": 375
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 378.0,
+      "is_nonstop": 0,
+      "duration_mins": 624
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 378.0,
+      "is_nonstop": 0,
+      "duration_mins": 620
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 765.0,
+      "is_nonstop": 0,
+      "duration_mins": 1116
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 765.0,
+      "is_nonstop": 0,
+      "duration_mins": 1155
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 765.0,
+      "is_nonstop": 0,
+      "duration_mins": 1056
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2027-01-15",
+      "airline": "American Airlines",
+      "price": 556.0,
+      "is_nonstop": 0,
+      "duration_mins": 1150
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2027-01-15",
+      "airline": "American Airlines",
+      "price": 556.0,
+      "is_nonstop": 0,
+      "duration_mins": 1015
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "JFK-HNL",
+      "target_date": "2027-01-15",
+      "airline": "American Airlines",
+      "price": 556.0,
+      "is_nonstop": 0,
+      "duration_mins": 940
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 607.0,
+      "is_nonstop": 0,
+      "duration_mins": 530
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Asiana Airlines",
+      "price": 636.0,
+      "is_nonstop": 0,
+      "duration_mins": 530
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 663.0,
+      "is_nonstop": 1,
+      "duration_mins": 500
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 500.0,
+      "is_nonstop": 0,
+      "duration_mins": 490
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 500.0,
+      "is_nonstop": 0,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Asiana Airlines",
+      "price": 529.0,
+      "is_nonstop": 0,
+      "duration_mins": 490
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Philippine Airlines",
+      "price": 461.0,
+      "is_nonstop": 0,
+      "duration_mins": 610
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Korean Air",
+      "price": 523.0,
+      "is_nonstop": 0,
+      "duration_mins": 460
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Japan Airlines",
+      "price": 557.0,
+      "is_nonstop": 0,
+      "duration_mins": 435
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 500.0,
+      "is_nonstop": 0,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Asiana Airlines",
+      "price": 614.0,
+      "is_nonstop": 0,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "KIX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Japan Airlines",
+      "price": 699.0,
+      "is_nonstop": 1,
+      "duration_mins": 425
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 181.0,
+      "is_nonstop": 1,
+      "duration_mins": 178
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 181.0,
+      "is_nonstop": 1,
+      "duration_mins": 178
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Delta Air Lines",
+      "price": 181.0,
+      "is_nonstop": 1,
+      "duration_mins": 168
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 169.0,
+      "is_nonstop": 1,
+      "duration_mins": 244
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 169.0,
+      "is_nonstop": 1,
+      "duration_mins": 244
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Southwest Airlines",
+      "price": 184.0,
+      "is_nonstop": 0,
+      "duration_mins": 850
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 473.0,
+      "is_nonstop": 1,
+      "duration_mins": 244
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "United Airlines",
+      "price": 474.0,
+      "is_nonstop": 1,
+      "duration_mins": 241
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 484.0,
+      "is_nonstop": 1,
+      "duration_mins": 249
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 245
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 259
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 208.0,
+      "is_nonstop": 1,
+      "duration_mins": 244
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-09-01",
+      "airline": "Southwest Airlines",
+      "price": 208.0,
+      "is_nonstop": 0,
+      "duration_mins": 505
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 269.0,
+      "is_nonstop": 0,
+      "duration_mins": 286
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 269.0,
+      "is_nonstop": 0,
+      "duration_mins": 311
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 179.0,
+      "is_nonstop": 1,
+      "duration_mins": 233
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 179.0,
+      "is_nonstop": 1,
+      "duration_mins": 231
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 188.0,
+      "is_nonstop": 0,
+      "duration_mins": 558
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 506.0,
+      "is_nonstop": 0,
+      "duration_mins": 1206
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 506.0,
+      "is_nonstop": 0,
+      "duration_mins": 1246
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 506.0,
+      "is_nonstop": 0,
+      "duration_mins": 1284
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Southwest Airlines",
+      "price": 247.0,
+      "is_nonstop": 0,
+      "duration_mins": 465
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Delta Air Lines",
+      "price": 254.0,
+      "is_nonstop": 1,
+      "duration_mins": 223
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "LAX-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 254.0,
+      "is_nonstop": 1,
+      "duration_mins": 220
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Philippine Airlines",
+      "price": 458.0,
+      "is_nonstop": 0,
+      "duration_mins": 125
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 604.0,
+      "is_nonstop": 0,
+      "duration_mins": 95
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Korean Air",
+      "price": 604.0,
+      "is_nonstop": 0,
+      "duration_mins": null
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 490
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 470
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 490
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Zipair",
+      "price": 298.0,
+      "is_nonstop": 1,
+      "duration_mins": null
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Philippine Airlines",
+      "price": 458.0,
+      "is_nonstop": 0,
+      "duration_mins": 1230
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 755
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": 115
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": null
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "NRT-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Korean Air",
+      "price": 498.0,
+      "is_nonstop": 0,
+      "duration_mins": null
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Southwest Airlines",
+      "price": 308.0,
+      "is_nonstop": 0,
+      "duration_mins": 340
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Southwest Airlines",
+      "price": 308.0,
+      "is_nonstop": 0,
+      "duration_mins": 370
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Southwest Airlines",
+      "price": 308.0,
+      "is_nonstop": 0,
+      "duration_mins": 375
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 244.0,
+      "is_nonstop": 0,
+      "duration_mins": 752
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 244.0,
+      "is_nonstop": 0,
+      "duration_mins": 823
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 244.0,
+      "is_nonstop": 0,
+      "duration_mins": 883
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Southwest Airlines",
+      "price": 358.0,
+      "is_nonstop": 0,
+      "duration_mins": 690
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-12-20",
+      "airline": "Southwest Airlines",
+      "price": 358.0,
+      "is_nonstop": 0,
+      "duration_mins": 795
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 531.0,
+      "is_nonstop": 0,
+      "duration_mins": 1090
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 534
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 215.0,
+      "is_nonstop": 0,
+      "duration_mins": 852
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SEA-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Southwest Airlines",
+      "price": 265.0,
+      "is_nonstop": 0,
+      "duration_mins": 595
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 249.0,
+      "is_nonstop": 0,
+      "duration_mins": 765
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-09-01",
+      "airline": "United Airlines",
+      "price": 249.0,
+      "is_nonstop": 0,
+      "duration_mins": 658
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 249.0,
+      "is_nonstop": 0,
+      "duration_mins": 662
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Alaska Airlines",
+      "price": 208.0,
+      "is_nonstop": 0,
+      "duration_mins": 402
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 208.0,
+      "is_nonstop": 0,
+      "duration_mins": 492
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-11-25",
+      "airline": "Southwest Airlines",
+      "price": 214.0,
+      "is_nonstop": 0,
+      "duration_mins": 685
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 473.0,
+      "is_nonstop": 0,
+      "duration_mins": 1031
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 483.0,
+      "is_nonstop": 0,
+      "duration_mins": 1496
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 483.0,
+      "is_nonstop": 0,
+      "duration_mins": 1313
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Delta Air Lines",
+      "price": 199.0,
+      "is_nonstop": 0,
+      "duration_mins": 533
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 409
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-HNL",
+      "target_date": "2027-01-15",
+      "airline": "United Airlines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 424
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-09-01",
+      "airline": "Alaska Airlines",
+      "price": 272.0,
+      "is_nonstop": 0,
+      "duration_mins": 1220
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-09-01",
+      "airline": "Delta Air Lines",
+      "price": 272.0,
+      "is_nonstop": 0,
+      "duration_mins": 432
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-09-01",
+      "airline": "United Airlines",
+      "price": 273.0,
+      "is_nonstop": 1,
+      "duration_mins": 153
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-11-25",
+      "airline": "American Airlines",
+      "price": 208.0,
+      "is_nonstop": 0,
+      "duration_mins": 631
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-11-25",
+      "airline": "Delta Air Lines",
+      "price": 242.0,
+      "is_nonstop": 0,
+      "duration_mins": 570
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-11-25",
+      "airline": "Delta Air Lines",
+      "price": 242.0,
+      "is_nonstop": 0,
+      "duration_mins": 566
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-12-20",
+      "airline": "Alaska Airlines",
+      "price": 493.0,
+      "is_nonstop": 0,
+      "duration_mins": 519
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 576.0,
+      "is_nonstop": 0,
+      "duration_mins": 1257
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2026-12-20",
+      "airline": "American Airlines",
+      "price": 576.0,
+      "is_nonstop": 0,
+      "duration_mins": 1409
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Delta Air Lines",
+      "price": 199.0,
+      "is_nonstop": 0,
+      "duration_mins": 495
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 209.0,
+      "is_nonstop": 0,
+      "duration_mins": 370
+    },
+    {
+      "observed_date": "2026-08-12",
+      "corridor": "SFO-OGG",
+      "target_date": "2027-01-15",
+      "airline": "Alaska Airlines",
+      "price": 250.0,
+      "is_nonstop": 1,
+      "duration_mins": 205
     }
   ],
   "oil_prices": [
@@ -153093,6 +154173,10 @@
     {
       "date": "2026-08-11",
       "wti_price": 82.58000183105469
+    },
+    {
+      "date": "2026-08-12",
+      "wti_price": 83.41000366210938
     }
   ]
 }
